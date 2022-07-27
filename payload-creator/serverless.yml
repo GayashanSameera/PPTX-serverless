@@ -1,0 +1,58 @@
+service: tpip-ms-pptx-payload
+projectDir: ../
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  timeout: 30
+  stage: ${file(../env.yml):${opt:stage}.environment}
+  region: eu-west-2
+  tracing:
+    apiGateway: true
+    lambda: true
+  logs:
+    restApi: true
+  apiGateway:
+    minimumCompressionSize: 1024
+  environment:
+    POC_PPTX_BUCKET: ${file(../env.yml):${opt:stage}.pocPptxBucket}
+  iam:
+    role:
+      statements:
+        - Effect: 'Allow'
+          Action:
+            - s3:PutObject
+            - s3:GetObject
+          Resource: '*'
+
+  serverless-offline:
+    host: 0.0.0.0
+  prune:
+    automatic: true
+    number: 3
+  warningThreshold: 100
+
+functions:
+  createPayload:
+    handler: route.createPayload
+
+resources:
+  Resources:
+    PocDocx:
+      Type: AWS::S3::Bucket
+      DeletionPolicy: Retain
+      Properties:
+        BucketName : ${self:provider.environment.POC_PPTX_BUCKET}
+        PublicAccessBlockConfiguration:
+          BlockPublicAcls: true
+          BlockPublicPolicy: true
+          IgnorePublicAcls: true
+          RestrictPublicBuckets: true
+        BucketEncryption:
+          ServerSideEncryptionConfiguration:
+            - ServerSideEncryptionByDefault:
+                SSEAlgorithm: AES256
+    
+plugins:
+  - serverless-prune-plugin
+  - serverless-cloudformation-resource-counter

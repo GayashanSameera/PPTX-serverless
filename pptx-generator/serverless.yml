@@ -1,11 +1,13 @@
-service: pptx-generate-ms
-
+service: tpip-ms-pptx-gen
+projectDir: ../
 frameworkVersion: '3'
 
 provider:
   name: aws
   runtime: python3.7
-  stage: ${file(env.yml):${opt:stage}.environment}
+  stage: ${file(../env.yml):${opt:stage}.environment}
+  environment:
+    POC_PPTX_BUCKET: ${file(../env.yml):${opt:stage}.pocPptxBucket}
   iam:
     role:
       statements:
@@ -14,12 +16,11 @@ provider:
             - s3:PutObject
             - s3:GetObject
           Resource: '*'
-  environment:
-    POC_PPTX_BUCKET: ${file(env.yml):${opt:stage}.pocPptxBucket}
+  
 
 functions:
   generate:
-    handler: handler.generate
+    handler: route.generate
     timeout: 900
     events:
       - http:
@@ -29,20 +30,3 @@ functions:
 
 plugins:
   - serverless-python-requirements
-
-resources:
-  Resources:
-    PocDocx:
-      Type: AWS::S3::Bucket
-      DeletionPolicy: Retain
-      Properties:
-        BucketName : ${self:provider.environment.POC_PPTX_BUCKET}
-        PublicAccessBlockConfiguration:
-          BlockPublicAcls: true
-          BlockPublicPolicy: true
-          IgnorePublicAcls: true
-          RestrictPublicBuckets: true
-        BucketEncryption:
-          ServerSideEncryptionConfiguration:
-            - ServerSideEncryptionByDefault:
-                SSEAlgorithm: AES256
