@@ -1,5 +1,5 @@
 import json
-from handlers.generate_pptx import hello
+from src.handlers.generate_pptx import hello
 def generate(event, context):
     print("event",event)
     hello()

@@ -54,5 +54,7 @@ resources:
                 SSEAlgorithm: AES256
     
 plugins:
+  - serverless-webpack
+  - serverless-offline
   - serverless-prune-plugin
   - serverless-cloudformation-resource-counter
