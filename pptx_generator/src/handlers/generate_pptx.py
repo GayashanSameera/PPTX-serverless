@@ -1,11 +1,17 @@
 import pydash
 from pptx.util import Inches
+from pptx.oxml.xmlchemy import OxmlElement
+from pptx.dml.color import RGBColor
+from lxml import etree
+from copy import deepcopy
+from pptx.table import Table, _Row, _Column, _Cell
+from pptx.enum.text import PP_ALIGN
 import re
 
 # Parent Tag class
 class Tag:
-    def __init__(self):
-       pass
+    def __init__(self,pattern):
+       self.pattern = pattern
     
     def get_tag_content(pattern, shape):
          matches = re.findall(pattern, shape.text)
@@ -28,9 +34,17 @@ class Tag:
                     new_text = cell.text.replace(replaced_for, replaced_text)
                     cell.text = new_text
  
-      
-    def get_tag_from_string():
-        print()
+    def get_object_values():
+        matches = super().get_tag_content(pattern,shape)
+        if( not matches or len(matches) < 1):
+             return
+        for match in matches:
+            object_value = pydash.get(replacements, match)
+            return object_value
+         
+    def get_tag_from_string(pattern,string):
+        matches = re.findall(pattern, string)
+        return matches
     
     
 
@@ -57,36 +71,3 @@ class Image(Tag):
             super().replace_tags(str(f"+++IM {match} +++"), "", shape)
             
     
-class Table(Tag):
-    def __init__(self):
-        super().__init__()
-        self.pattern = r'\+\+\+TB_ADD (.*?) \+\+\+'
-    
-    def replace_tables(pattern,shape):
-        
-        matches = super().get_tag_content(pattern,shape)
-        if( not matches or len(matches) < 1):
-             return
-        for match in matches:
-            object_value = pydash.get(replacements, match)
-            if(object_value):
-             super().replace_tags(str(f"+++TB_ADD {match} +++"), "", shape)
-             
-             
-    def create_table():
-        row_count = replacements["row_count"]
-        cols = replacements["colum_count"]
-        headers = replacements["headers"]
-        row_data = replacements["rows"]
-        styles = replacements["styles"]
-        table_count_per_slide = replacements["table_count_per_slide"]
-
-        total_rows = len(row_data)
-        total_table_count = math.ceil(total_rows / row_count)
-
-        slide_count = math.ceil(total_table_count / table_count_per_slide) 
-        extra_slide_count = slide_count - 1
-        
-     
-
-        
