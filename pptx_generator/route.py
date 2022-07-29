@@ -1,8 +1,8 @@
 import json
-from src.handlers.generate_pptx import hello
+from src.handlers.generate_pptx import generatePptx
 def generate(event, context):
     print("event",event)
-    hello()
+    generatePptx()
     body = {
         "message": "Go Serverless v1.0! Your function executed successfully!",
         "input": event
@@ -16,5 +16,5 @@ def generate(event, context):
     return response
 
 
-if __name__ == '__main__':
-    generate({},{})
+# if __name__ == '__main__':
+#     generate({},{})
