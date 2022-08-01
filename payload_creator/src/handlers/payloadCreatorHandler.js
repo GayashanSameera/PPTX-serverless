@@ -1,11 +1,17 @@
-import helper from "../helpers/index"
+import responseHelper from "../helpers"
 
 
 const payloadCreatorHandler={
    createPayload:()=>{
-    helper.responsehelper.successResponse()
+    
+    try{
+      if(event=='success')
+      responseHelper.successResponse()
+
+    }catch{
+      responseHelper.errorResponse()
+
+    }
    } 
 }
-
-
 export default payloadCreatorHandler;

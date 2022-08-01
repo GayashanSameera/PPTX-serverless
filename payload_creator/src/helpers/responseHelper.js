@@ -1,8 +1,6 @@
-module.exports={
-    successResponse:(event,message,content={},result=true)=>{
+const responseHelper= {successResponse:(message,content={},result=true)=>{
         let success={
             statusCode:200,
-            header:'',
             body:JSON.stringify({
             result,
             message,
@@ -14,12 +12,13 @@ module.exports={
     } ,
 
 
-    errorResponse:(event,statusCode,message,err,errorPayload)=>{
+    errorResponse:(statusCode,message,errorPayload)=>{
         const resData={
             statusCode,
-            header:"",
             body:JSON.stringify({message,...errorPayload}),
         };
         return resData;
     }
 }
+
+export default responseHelper
