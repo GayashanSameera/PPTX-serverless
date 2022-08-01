@@ -1,5 +1,7 @@
 import pydash
 from pptx.util import Inches
+import io
+import base64
 from pptx import Presentation
 import enum
 import re
@@ -48,7 +50,7 @@ def generatePptx():
                         image = Image()
                         def getParams(commands_dic,presentation,slide,shape,slides,dataObj):
                         
-                            return image.replace_images(slide,CommandRegex.IMAGE.value,shape)
+                            return image.replace_images(slide,CommandRegex.IMAGE.value[0],shape)
                         
                         return getParams
                     
@@ -60,7 +62,7 @@ def generatePptx():
                     try:
                         text = Text()
                         def getParams(commands_dic,presentation,slide,shape,slides,dataObj):
-                            return text.text_replace(slide,CommandRegex.TEXT.value,shape)
+                            return text.text_replace(slide,CommandRegex.TEXT.value[0],shape)
                         
                         return getParams
                     except Exception as e:
@@ -75,7 +77,7 @@ def generatePptx():
                     self.pattern = pattern
             
             def get_tag_content(self,pattern, shape):
-                    matches = re.findall(r'\+\+\+IM (.*?) \+\+\+',shape.text)
+                    matches = re.findall(pattern,shape.text)
                     return matches
             
             def replace_tags(self,replaced_for,replaced_text,shape):
@@ -92,7 +94,7 @@ def generatePptx():
                     if( not matches or len(matches) < 1):
                         return
                     for match in matches:
-                        object_value = pydash.get(dataObj, match)
+                        object_value = pydash.get(dataObj, match,default={})
                         return match , object_value
                     
             def get_tag_from_string(pattern,string):
@@ -124,13 +126,15 @@ def generatePptx():
             def replace_images(self,slide,pattern,shape): 
                 match , object_value = super().get_object_values(pattern,shape)
     
-                url = pydash.get(object_value, "url")
-                left = pydash.get(object_value, "size.left")
-                height = pydash.get(object_value, "size.height")
-                top = pydash.get(object_value, "size.top")
-                width = pydash.get(object_value, "size.width")
+                url = pydash.get(object_value, "url",default="")
+                left = pydash.get(object_value, "size.left",default=1)
+                height = pydash.get(object_value, "size.height",default=1)
+                top = pydash.get(object_value, "size.top",default=5)
+                width = pydash.get(object_value, "size.width",default=5)
             
-                slide.shapes.add_picture(url, Inches(left), Inches(top), Inches(width) ,Inches(height) )
+                decodeimg = base64.b64decode(url)
+                img = io.BytesIO(decodeimg)
+                slide.shapes.add_picture(img, Inches(left), Inches(top), Inches(width) ,Inches(height) )
                 super().replace_tags(str(f"{CommandRegexSub.IMG.value} {match} +++"),"", shape)
             
         
