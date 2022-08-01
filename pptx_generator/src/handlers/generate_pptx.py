@@ -8,8 +8,14 @@ import re
 dataObj = {
        
         "schemeName": "XYZ Pension Scheme",
-        "title": "Q2 2021 Summary Report",
-        "heading":"Investment performance to 30 June 2021",
+        "title": {
+            "text": "Q2 2021 Summary Report",
+            "styles": "Red"
+            },
+        "heading": {
+            "text": "Investment performance to 30 June 2021",
+            "styles": "Red"
+            }
 	
     }
 
@@ -124,15 +130,21 @@ class Image(Tag):
  
 class Text(Tag):
   
-   def __init__(self):
-      pass
+    def __init__(self):
+        pass
           
-   def text_replace(self, slide, pattern,shape):
-      match, object_value =super().get_object_values(pattern,shape)
-      print("Match", dataObj)
-      super().replace_tags(str(f"+++INS {match} +++"), str(object_value), shape)
+    def text_replace(self, slide, pattern,shape):
+        match, object_value =super().get_object_values(pattern,shape)
+        print("Match", object_value)
+        object_type = type(object_value) == str
+        #print("Res ", res)
+        if type(object_value) == str:
+            super().replace_tags(str(f"+++INS {match} +++"), str(object_value), shape)
+        else:
+            print ("Object")
+            
       
-   def text_tag_update(pattern,text):
+    def text_tag_update(pattern,text):
        match, object_value = super().get_object_values_string(self,pattern,shape)
        if(object_value != False):
             current_text = current_text.replace(str(f"+++INS {match} +++"), str(object_value))
