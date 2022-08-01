@@ -13,7 +13,10 @@ dataObj = {
         "schemeName": "XYZ Pension Scheme",
         "title": {
             "text": "Q2 2021 Summary Report",
-            "styles": "font_name = Comic Sans MS",
+            "styles": {
+                    "name": "Comic Sans MS",
+                    "size": "Pt(45)"
+                }
             },
         "heading": {
             "text": "Investment performance to 30 June 2021",
@@ -144,13 +147,24 @@ class Text(Tag):
         if type(object_value) == str:
             super().replace_tags(str(f"+++INS {match} +++"), str(object_value), shape)
         else:
-            print ("Object")
-            print("Text value", object_value.get('styles'))
+            #print ("Object")
+            #print("Text value", object_value.get('styles'))
+            stylesValues = object_value.get('styles')
+            print("Method value", stylesValues)
+            font_name = stylesValues.get('name')
+            print('font name', font_name)
             title_para = slide.shapes.title.text_frame.paragraphs[0]
-            print ("title para", title_para)
-            title_para.font.name = "Comic Sans MS"
+            #print ("title para", title_para)
+            title_para.font.name = font_name
             title_para.font.size = Pt(50)
+
+            # for styles in stylesValues:
+            #     res = stylesValues.get(styles)
+            #     print('Res', styles)
+            #     title_para.font.styles = res
+
             matchValues = object_value.get('text')
+            print('matchValues', matchValues)
             super().replace_tags(str(f"+++INS {match} +++"), str(matchValues), shape)
             matchStyles = object_value.get('styles')
             #print('matchStyles', matchStyles)
