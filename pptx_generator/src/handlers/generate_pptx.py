@@ -3,6 +3,9 @@ from pptx.util import Inches
 from pptx import Presentation
 import enum
 import re
+from pptx.dml.color import RGBColor
+from pptx.enum.dml import MSO_THEME_COLOR
+from pptx.util import Pt
 
 
 dataObj = {
@@ -10,7 +13,7 @@ dataObj = {
         "schemeName": "XYZ Pension Scheme",
         "title": {
             "text": "Q2 2021 Summary Report",
-            "styles": "Red"
+            "styles": "font.color.rgb = RGBColor(0xFF, 0x7F, 0x50)",
             },
         "heading": {
             "text": "Investment performance to 30 June 2021",
@@ -142,7 +145,9 @@ class Text(Tag):
             super().replace_tags(str(f"+++INS {match} +++"), str(object_value), shape)
         else:
             print ("Object")
-            
+            print("Text value", object_value.get('text'))
+            matchValues = object_value.get('text')
+            super().replace_tags(str(f"+++INS {match} +++"), str(matchValues), shape)
       
     def text_tag_update(pattern,text):
        match, object_value = super().get_object_values_string(self,pattern,shape)
