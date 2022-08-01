@@ -1,5 +1,6 @@
-const responsehelper=require('./responseHelper')
+
+import responsehelper from "./responseHelper"
 
 module.exports={
-   responsehelper
+   responsehelper,
 }

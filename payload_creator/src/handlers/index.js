@@ -1,6 +1,6 @@
-import payloadCreatorHandler from './payloadCreatorHandler'
+import payloadCreatorHandler from "./payloadCreatorHandler"
 
 
-exports={
+module.exports={
     payloadCreatorHandler,
 };
