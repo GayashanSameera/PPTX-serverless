@@ -9,71 +9,12 @@ import logging
 import base64
 from pptx import Presentation
 import enum
-import time
+import json
 import re
 
 POC_PPTX_BUCKET = os.environ.get("POC_PPTX_BUCKET")
 
-def generate_pptx():
-    
-    start_time = time.perf_counter ()
 
-    s3_client = boto3.client('s3')
-    response = s3_client.get_object(Bucket=POC_PPTX_BUCKET, Key='task.pptx')
-    data = response['Body'].read()
-
-    print("-- response --")
-    print(response)
-
-    print("-- data --")
-    print(data)
-    
-    f = open("/tmp/task.pptx", "wb")
-    f.write(data)
-    f.close()
-    
-
-    presentationObject = Presentation('/tmp/task.pptx')    
-    dataObj = {
-        
-            "assetChart": { "url" : "img1.png" , "size": {"left":1,"top":1, "height":3, "width":4.2}},
-            "schemeName": "XYZ Pension Scheme",
-            "title": "Q2 2021 Summary Report",
-            "heading":"Investment performance to 30 June 2021",
-
-        }
-   
-    
-    executor = CommandExecutor(presentationObject, dataObj)
-    executor.execute()
-
-    try:
-        with BytesIO() as fileobj:
-            presentationObject.save(fileobj)
-            fileobj.seek(0)
-            PATH = 'given/path/output.pptx'
-            res = s3_client.upload_fileobj(fileobj, POC_PPTX_BUCKET, PATH)
-    except ClientError as e:
-        logging.error(e)
-        return False
-                    
-
-    end_time = time.perf_counter ()
-    print(end_time - start_time, "seconds")
-    
-    body = {
-        "message": "Go Serverless v1.0! Your function executed successfully!",
-        "input": event
-    }
-
-    response = {
-        "statusCode": 200,
-        "body": json.dumps(body)
-    }
-
-    return response
-    
-    
 class CommandRegex(enum.Enum):
         IMAGE = r'\+\+\+IM (.*?) \+\+\+',
         TEXT  = r'\+\+\+INS (.*?) \+\+\+'
@@ -133,7 +74,6 @@ class CommandRegistry:
                 
                 
 class Tag:
-    
         def __init__(self,pattern):
             self.pattern = pattern
             
@@ -178,7 +118,6 @@ class Tag:
                 
         
 class Image(Tag):
-    
         def __init__(self):
             pass
                 
@@ -199,7 +138,6 @@ class Image(Tag):
         
             
 class Text(Tag):
-    
         def __init__(self):
             pass
                 
@@ -251,8 +189,48 @@ class CommandExecutor:
                             print(e.__class__)
                             
                             
-        
+def generate_pptx(event,context):
+    s3_client = boto3.client('s3')
+    response = s3_client.get_object(Bucket=POC_PPTX_BUCKET, Key='task.pptx')
+    data = response['Body'].read()
 
+    f = open("/tmp/task.pptx", "wb")
+    f.write(data)
+    f.close()
+    presentationObject = Presentation('/tmp/task.pptx')    
+    dataObj = {
+        
+            "assetChart": { "url" : "img1.png" , "size": {"left":1,"top":1, "height":3, "width":4.2}},
+            "schemeName": "XYZ Pension Scheme",
+            "title": "Q2 2021 Summary Report",
+            "heading":"Investment performance to 30 June 2021",
+    }
+    executor = CommandExecutor(presentationObject, dataObj)
+    executor.execute()
+
+    try:
+        with BytesIO() as fileobj:
+            presentationObject.save(fileobj)
+            fileobj.seek(0)
+            PATH = 'given/path/output.pptx'
+            res = s3_client.upload_fileobj(fileobj, POC_PPTX_BUCKET, PATH)
+    except ClientError as e:
+        logging.error(e)
+        return False
+                    
+
+    body = {
+        "message": "Go Serverless v1.0! Your function executed successfully!",
+        "input": event
+    }
+
+    response = {
+        "statusCode": 200,
+        "body": json.dumps(body)
+    }
+
+    return response
+    
     
     
    
