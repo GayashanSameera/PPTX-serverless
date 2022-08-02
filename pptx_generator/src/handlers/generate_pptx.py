@@ -1,38 +1,28 @@
 import pydash
+import os
 from pptx.util import Inches
+from io import BytesIO
+import io
+import boto3
+from botocore.exceptions import ClientError
+import logging
+import base64
 from pptx import Presentation
 import enum
+import json
 import re
-from pptx.dml.color import RGBColor
-from pptx.enum.dml import MSO_THEME_COLOR
 from pptx.util import Pt
 
-
-dataObj = {
-       
-        "schemeName": "XYZ Pension Scheme",
-        "title": {
-            "text": "Q2 2021 Summary Report",
-            "styles": {
-                    "name": "Comic Sans MS",
-                    "size": "Pt(45)"
-                }
-            },
-        "heading": {
-            "text": "Investment performance to 30 June 2021",
-            "styles": "Red"
-            }
-	
-    }
-
-prs = Presentation('input.pptx')
-print(prs)
+POC_PPTX_BUCKET = os.environ.get("POC_PPTX_BUCKET")
 
 
-    
 class CommandRegex(enum.Enum):
-    IMAGE = r'\+\+\+IM (.*?) \+\+\+',
-    TEXT  = r'\+\+\+INS (.*?) \+\+\+'
+        IMAGE = r'\+\+\+IM (.*?) \+\+\+',
+        TEXT  = r'\+\+\+INS (.*?) \+\+\+'
+        
+class CommandRegexSub(enum.Enum):
+        IMG = '+++IM'
+        INS = '+++INS'
     
 class Command(enum.Enum):
         IF_CONDITION = "if_condition"
@@ -42,170 +32,7 @@ class Command(enum.Enum):
         UPDATE_TABLE_TEXT = "update_table_text"
         DRAW_TABLE = "draw_tables"
         TEXT_REPLACE = "text_replace"
-    
-
-class Tag:
-        def __init__(self,pattern):
-                self.pattern = pattern
         
-        def get_tag_content(self,pattern, shape):
-             print('inside matches')
-            # print('pattern',pattern)
-    
-           
-             print('check123',shape.text)
-             matches = re.findall(pattern,shape.text)
-             print('INS', matches)
-             return matches
-        
-        def replace_tags(self,replaced_for,replaced_text,shape):
-            # print("vvv")
-            print('replace_for',replaced_for)
-            print('replace_text',replaced_text)
-            if shape.has_text_frame:
-                print('Has text', shape.has_text_frame)
-                text_frame = shape.text_frame
-                print('text_frame',text_frame)
-            for paragraph in text_frame.paragraphs:
-                print('paragraph',paragraph)
-                for run in paragraph.runs:
-                    cur_text = run.text
-                    print('cur_text',cur_text)
-                    new_text = cur_text.replace(replaced_for, replaced_text)
-                    print('new_text',new_text)
-                    run.text = new_text
-    
-        def get_object_values(self,pattern,shape):
-            # print('seee', shape)
-            matches = self.get_tag_content(pattern,shape)
-            # print('Matches', matches)
-            if( not matches or len(matches) < 1):
-                return
-            for match in matches:
-                object_value = pydash.get(dataObj, match)
-                return match , object_value
-              
-        def get_object_values_string(self,pattern,shape):
-             if( not matches or len(matches) < 1):
-               return { "text": text }
-
-             for match in matches:
-               object_value = pydash.get(dataObj, match, False)
-               if(object_value != False):
-                    current_text = current_text.replace(str(f"+++INS {match} +++"), str(object_value))
-
-    
-             return { "text": current_text }
-                
-            
-        def get_tag_from_string(pattern,string):
-            matches = re.findall(pattern, string)
-            return matches
-        
-        
-        
-        
-
-class Image(Tag):
-        def __init__(self):
-            pass
-            
-        def replace_images(self,slide,pattern,shape): 
-          
-          print('shape',shape)
-          print('pattern',pattern)   
-          # print('start')
-          match , object_value = super().get_object_values(pattern,shape)
-          print('object_value',object_value,"match",match)
-          # print('end')
-          # # print("shape.text",shape)
-          # Tag.get_object_values(pattern,shape)
-          url = pydash.get(object_value, "url")
-          left = pydash.get(object_value, "size.left")
-          height = pydash.get(object_value, "size.height")
-          top = pydash.get(object_value, "size.top")
-          width = pydash.get(object_value, "size.width")
-          
-          print("shapeTextFrame",shape)
-          slide.shapes.add_picture(url, Inches(left), Inches(top), Inches(width) ,Inches(height) )
-          super().replace_tags(str(f"+++IM {match} +++"),"", shape)
-          
-        def printHello(self,name):
-           print(name)
-        
- 
-class Text(Tag):
-  
-    def __init__(self):
-        pass
-          
-    def text_replace(self, slide, pattern,shape):
-        match, object_value =super().get_object_values(pattern,shape)
-        print("Match", object_value)
-        object_type = type(object_value) == str
-        #print("Res ", res)
-        if type(object_value) == str:
-            super().replace_tags(str(f"+++INS {match} +++"), str(object_value), shape)
-        else:
-            #print ("Object")
-            #print("Text value", object_value.get('styles'))
-            stylesValues = object_value.get('styles')
-            print("Method value", stylesValues)
-            font_name = stylesValues.get('name')
-            print('font name', font_name)
-            title_para = slide.shapes.title.text_frame.paragraphs[0]
-            #print ("title para", title_para)
-            title_para.font.name = font_name
-            title_para.font.size = Pt(50)
-
-            # for styles in stylesValues:
-            #     res = stylesValues.get(styles)
-            #     print('Res', styles)
-            #     title_para.font.styles = res
-
-            matchValues = object_value.get('text')
-            print('matchValues', matchValues)
-            super().replace_tags(str(f"+++INS {match} +++"), str(matchValues), shape)
-            matchStyles = object_value.get('styles')
-            #print('matchStyles', matchStyles)
-                        
-      
-    def text_tag_update(pattern,text):
-       match, object_value = super().get_object_values_string(self,pattern,shape)
-       if(object_value != False):
-            current_text = current_text.replace(str(f"+++INS {match} +++"), str(object_value))
-        
-# def replace_images(slide,pattern,shape): 
-#       tag = Tag(r'\+\+\+IM (.*?) \+\+\+')
-#       print('shape',shape)
-#       print('pattern',pattern)   
-#       # print('start')
-#       match , object_value = tag.get_object_values(pattern,shape)
-#       print('object_value',object_value,"match",match)
-#       # print('end')
-#       # # print("shape.text",shape)
-#       # Tag.get_object_values(pattern,shape)
-#       url = pydash.get(object_value, "url")
-#       left = pydash.get(object_value, "size.left")
-#       height = pydash.get(object_value, "size.height")
-#       top = pydash.get(object_value, "size.top")
-#       width = pydash.get(object_value, "size.width")
-      
-#       print("shapeTextFrame",shape)
-#       slide.shapes.add_picture(url, Inches(left), Inches(top), Inches(width) ,Inches(height) )
-#       tag.replace_tags(str(f"+++IM {match} +++"),"", shape)
-                              
-class Expression(Tag):
-        def __init__(self,pattern):
-            super().__init__(pattern)
-
-        def if_condition(self):
-            print("if condition func executed")
-
-        def for_loop(self):
-            print("for loop func executed")
-            
-
 class CommandRegistry:
         def __init__(self):
             self.commands = {
@@ -225,46 +52,126 @@ class CommandRegistry:
             return self.commands.keys()
 
         def get_command(self,command_name):
-            # print('shapeText',shapeText)
-            # if command_name == Command.IF_CONDITION:
-            #     expression = Expression()
-            #     return expression.if_condition
-            # elif command_name == Command.FOR_LOOP:
-            #     expression = Expression()
-            #     return expression.for_loop
             if command_name == Command.REPLACE_IMAGE:
-              # def getData(shape,slide):
-              #    return getData
-              print("zzzzzzzzzz")
-              try:
-                 image = Image()
-                 image.printHello('helooooo')
-                 def forTest(commands_dic,presentation,slide,shape,slides,dataObj):
-                   
-                    return image.replace_images(slide,r'\+\+\+IM (.*?) \+\+\+',shape)
-                  #  print('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',a,b,c,d,e,f)
-                 return forTest
-              except Exception as e:
-                print("hello")
-                print(e)
+                
+                image = Image()
+                def getParams(commands_dic,presentation,slide,shape,slides,dataObj):
+                        
+                    return image.replace_images(slide,CommandRegex.IMAGE.value[0],shape)
+                        
+                return getParams
+                    
             elif command_name == Command.TEXT_REPLACE:
-              # def getData(shape,slide):
-              #    return getData
-              print("Text", command_name)
-              try:
-                 text = Text()
-                 #text.text_replace()
-                 def forTest(commands_dic,presentation,slide,shape,slides,dataObj):
-                    print('dataObj', slide)
-                    return text.text_replace(slide,r'\+\+\+INS (.*?) \+\+\+',shape)
-                  #  print('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',a,b,c,d,e,f)
-                 return forTest
-              except Exception as e:
-                print("hello")
-                print(e)         
+                    
+                text = Text()
+                def getParams(commands_dic,presentation,slide,shape,slides,dataObj):
+                    return text.text_replace(slide,CommandRegex.TEXT.value[0],shape)
+                        
+                return getParams
+                             
+                    
             else:
                 raise Exception("Invalid command name")
+                
+                
+class Tag:
+        def __init__(self,pattern):
+            self.pattern = pattern
+            
+        def get_tag_content(self,pattern, shape):
+            matches = re.findall(pattern,shape.text)
+            return matches
+            
+        def replace_tags(self,replaced_for,replaced_text,shape):
+            if shape.has_text_frame:
+                text_frame = shape.text_frame
+                for paragraph in text_frame.paragraphs:
+                    for run in paragraph.runs:
+                        cur_text = run.text
+                        new_text = cur_text.replace(replaced_for, replaced_text)
+                        run.text = new_text
+        
+        def get_object_values(self,pattern,shape):
+            matches = self.get_tag_content(pattern,shape)
+            if( not matches or len(matches) < 1):
+                return
+            for match in matches:
+                object_value = pydash.get(generate_pptx.dataObj, match,default={})
+                return match , object_value
+                    
+        def get_tag_from_string(pattern,string):
+            matches = re.findall(pattern, string)
+            return matches        
+                
+        def get_object_values_string(self,pattern,text):
+            matches = self.get_tag_from_string(pattern, text)
+            if( not matches or len(matches) < 1):
+                return { "text": text }
 
+            for match in matches:
+                object_value = pydash.get(generate_pptx.dataObj, match, False)
+                if(object_value != False):
+                    current_text = current_text.replace(str(f"{CommandRegexSub.INS.value} {match} +++"), str(object_value))
+
+        
+            return { "text": current_text }
+                    
+                
+        
+class Image(Tag):
+        def __init__(self):
+            pass
+                
+        def replace_images(self,slide,pattern,shape): 
+            match , object_value = super().get_object_values(pattern,shape)
+    
+            url = pydash.get(object_value, "url",default="")
+            left = pydash.get(object_value, "size.left",default=1)
+            height = pydash.get(object_value, "size.height",default=1)
+            top = pydash.get(object_value, "size.top",default=5)
+            width = pydash.get(object_value, "size.width",default=5)
+            
+            decodeimg = base64.b64decode(url)
+            img = io.BytesIO(decodeimg)
+            slide.shapes.add_picture(img, Inches(left), Inches(top), Inches(width) ,Inches(height) )
+            super().replace_tags(str(f"{CommandRegexSub.IMG.value} {match} +++"),"", shape)
+            
+        
+            
+class Text(Tag):
+        def __init__(self):
+            pass
+                
+        def text_replace(self, slide, pattern,shape):
+            match, object_value =super().get_object_values(pattern,shape)
+            object_type = type(object_value) == str
+            if type(object_value) == str:
+                super().replace_tags(str(f"{CommandRegexSub.INS.value} {match} +++"), str(object_value), shape)
+            else:
+                stylesValues = object_value.get('styles')
+                font_name = stylesValues.get('name')
+                title_para = slide.shapes.title.text_frame.paragraphs[0]
+                title_para.font.name = font_name
+                title_para.font.size = Pt(50)
+                matchValues = object_value.get('text')
+                super().replace_tags(str(f"{CommandRegexSub.INS.value} {match} +++"), str(matchValues), shape)
+            
+        def text_tag_update(pattern,text):
+            match, object_value = super().get_object_values_string(pattern,text)
+            if(object_value != False):
+                    current_text = current_text.replace(str(f"{CommandRegexSub.INS.value} {match} +++"), str(object_value))
+            
+                                
+class Expression(Tag):
+        def __init__(self,pattern):
+            super().__init__(pattern)
+
+        def if_condition(self):
+            print("if condition func executed")
+
+        def for_loop(self):
+            print("for loop func executed")
+                
 
 class CommandExecutor:
         registry = CommandRegistry()
@@ -277,31 +184,76 @@ class CommandExecutor:
         def execute(self):
             # get command names as a list
             commands = self.registry.get_commands_list()
-            # print("a",commands)
+                
             commands_dic = self.registry.get_commands_dictionary()
-            # print("b",commands_dic)
+            
 
             # find commands in the presentation using 'commands' list & execute
             slides = [self.slide for self.slide in self.presentation.slides]
             for shape in self.slide.shapes:
                 if shape.has_text_frame:
-                    print('slide', slides)
                     if shape.text:
                         try:
-                            print("shape.text",shape.text)
-                            self.registry.get_command(Command.TEXT_REPLACE)(commands_dic, self.presentation, self.slide, shape, slides.index(self.slide), self.dataObj)
+                            self.registry.get_command(Command.REPLACE_IMAGE)(commands_dic, self.presentation, self.slide, shape, slides.index(self.slide), self.dataObj)
+                            # self.registry.get_command(Command.TEXT_REPLACE)(commands_dic, self.presentation, self.slide, shape, slides.index(self.slide), self.dataObj)
                         except Exception as e:
-                           print(e.__class__)
-                          #  print(commands_dic, self.presentation, self.slide, shape, slides.index(self.slide), self.dataObj)
-                        
-    
+                            print(e.__class__)
+                            
+                            
+def generate_pptx(event,context):
+    s3_client = boto3.client('s3')
+    response = s3_client.get_object(Bucket=POC_PPTX_BUCKET, Key='task.pptx')
+    data = response['Body'].read()
 
+    f = open("/tmp/task.pptx", "wb")
+    f.write(data)
+    f.close()
+    presentationObject = Presentation('/tmp/task.pptx')    
+    dataObj = {
+        
+            "assetChart": { "url" : "img1.png" , "size": {"left":1,"top":1, "height":3, "width":4.2}},
+            "schemeName": "XYZ Pension Scheme",
+            "title": {
+            "text": "Q2 2021 Summary Report",
+            "styles": {
+                    "name": "Comic Sans MS",
+                    "size": "Pt(45)"
+                }
+            },
+            "heading":"Investment performance to 30 June 2021",
+    }
+    executor = CommandExecutor(presentationObject, dataObj)
+    executor.execute()
+
+    try:
+        with BytesIO() as fileobj:
+            presentationObject.save(fileobj)
+            fileobj.seek(0)
+            PATH = 'given/path/output.pptx'
+            res = s3_client.upload_fileobj(fileobj, POC_PPTX_BUCKET, PATH)
+    except ClientError as e:
+        logging.error(e)
+        return False
+                    
+
+    body = {
+        "message": "Go Serverless v1.0! Your function executed successfully!",
+        "input": event
+    }
+
+    response = {
+        "statusCode": 200,
+        "body": json.dumps(body)
+    }
+
+    return response
     
-executor = CommandExecutor(prs, dataObj)
-executor.execute()
-prs.save('output.pptx')
     
-  
+    
+   
+   
+        
+    
     
    
         
