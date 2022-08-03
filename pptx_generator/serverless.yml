@@ -6,6 +6,7 @@ provider:
   name: aws
   runtime: python3.7
   stage: ${file(../env.yml):${opt:stage}.environment}
+  region: eu-west-2
   environment:
     POC_PPTX_BUCKET: ${file(../env.yml):${opt:stage}.pocPptxBucket}
   iam:
