@@ -56,9 +56,9 @@ const formalProposal1={
 }
  };
 
-export default async(event)=>{
-    const fetchDataResult=fetchDataResult.fetchData(event,formalProposal1)
+// export default async(event)=>{
+//     const fetchDataResult=fetchDataResult.fetchData(event,formalProposal1)
 
 
-    return formalProposal1
-}
+//     return formalProposal1
+// }
