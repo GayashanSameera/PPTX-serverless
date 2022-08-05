@@ -11,8 +11,8 @@ class Image(Tag):
     def __init__(self):
         pass
 
-    def replace_images(self, slide, pattern, shape):
-        match, object_value = super().get_object_values(pattern, shape)
+    def replace_images(self, slide, pattern, shape, dataObj):
+        match, object_value = super().get_object_values(pattern, shape,dataObj)
 
         url = pydash.get(object_value, "url", default="")
         left = pydash.get(object_value, "size.left", default=1)

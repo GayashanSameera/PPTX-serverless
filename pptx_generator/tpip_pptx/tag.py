@@ -2,7 +2,6 @@ import re
 import pydash
 
 from tpip_pptx.constants import CommandRegexSub
-from src.handlers.generate_pptx import generate_pptx
 
 class Tag:
     def __init__(self, pattern):
@@ -25,25 +24,25 @@ class Tag:
         matches = tag in shape.text
         return matches
 
-    def get_object_values(self, pattern, shape):
+    def get_object_values(self, pattern, shape,dataObj):
         matches = self.get_tag_content(pattern, shape)
         if (not matches or len(matches) < 1):
             return
         for match in matches:
-            object_value = pydash.get(generate_pptx.dataObj, match, default={})
+            object_value = pydash.get(dataObj, match, default={})
             return match, object_value
 
     def get_tag_from_string(self,pattern, string):
         matches = re.findall(pattern, string)
         return matches
 
-    def get_object_values_string(self, pattern, text):
+    def get_object_values_string(self, pattern, text,dataObj):
         matches = self.get_tag_from_string(pattern, text)
         if (not matches or len(matches) < 1):
             return {"text": text}
 
         for match in matches:
-            object_value = pydash.get(generate_pptx.dataObj, match, False)
+            object_value = pydash.get(dataObj, match, False)
             if (object_value != False):
                 current_text = current_text.replace(str(f"{CommandRegexSub.INS.value} {match} +++"), str(object_value))
 
