@@ -1,7 +1,7 @@
 import re
 import pydash
 
-from constants import CommandRegexSub
+from tpip_pptx.constants import CommandRegexSub
 from src.handlers.generate_pptx import generate_pptx
 
 class Tag:

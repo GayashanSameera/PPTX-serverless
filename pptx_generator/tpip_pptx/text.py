@@ -1,5 +1,5 @@
-from constants import CommandRegexSub
-from tag import Tag
+from tpip_pptx.constants import CommandRegexSub
+from tpip_pptx.tag import Tag
 
 class Text(Tag):
     def __init__(self):
