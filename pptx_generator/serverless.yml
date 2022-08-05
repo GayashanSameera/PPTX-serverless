@@ -6,6 +6,7 @@ provider:
   name: aws
   runtime: python3.7
   stage: ${file(../env.yml):${opt:stage}.environment}
+  region: eu-west-2
   environment:
     POC_PPTX_BUCKET: ${file(../env.yml):${opt:stage}.pocPptxBucket}
   iam:
@@ -23,6 +24,10 @@ custom:
   prune:
     automatic: true
     number: 3
+  pythonRequirements:
+    dockerizePip: true # make it 'non-linux' when adding to the codepipeline if the proper python version installed in the pipeline
+    useDownloadCache: false
+    useStaticCache: false
 
 functions:
   generate:

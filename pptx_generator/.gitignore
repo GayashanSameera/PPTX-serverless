@@ -22,3 +22,4 @@ var/
 node_modules
 expressions/__pycache__
 helpers/__pycache__
+package-lock.json
