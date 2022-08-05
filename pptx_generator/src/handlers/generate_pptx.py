@@ -12,7 +12,6 @@ from tpip_pptx.table import Table
 from tpip_pptx.text import Text
 
 
-
 POC_PPTX_BUCKET = os.environ.get("POC_PPTX_BUCKET")
 
 
@@ -100,8 +99,31 @@ def generate_pptx(event, context):
     presentationObject = Presentation('/tmp/task.pptx')
     dataObj = {
         
-        "schemeName": "XYZ Pension Scheme",
-        "title": "Q2 2021 Summary Report",
+        "schemeName": {
+            "text": "XYZ Pension Scheme",
+            "styles": {
+                    "name": "Comic Sans MS",
+                    "size": "40",
+                    "italic": "True",
+                    "bold": "True",
+                    "alignment": "center",
+                    "underline": "True",
+                    "font_color": "#FFFF00"
+                
+            }
+        },
+        "title": {
+            "text": "Q2 2021 Summary Reporttt",
+            "styles": {
+                    "name": "Comic Sans MS",
+                    "size": "50",
+                    "italic": "True",
+                    "bold": "True",
+                    "alignment": "center",
+                    "underline": "True",
+                    "font_color": "#FF5733"
+                }
+            },
         "heading":"Investment performance to 30 June 2021",
         "heading_assets":"Investment performance to 30 June 2021",
         "assetAllocation": "Asset allocation at 30 June 2021",
