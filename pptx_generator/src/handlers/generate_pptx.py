@@ -6,10 +6,10 @@ import logging
 from pptx import Presentation
 import json
 
-from pptx_generator.src.tpip_pptx.constants import Command, CommandRegex
-from pptx_generator.src.tpip_pptx.image import Image
-from pptx_generator.src.tpip_pptx.table import Table
-from pptx_generator.src.tpip_pptx.text import Text
+from tpip_pptx.constants import Command, CommandRegex
+from tpip_pptx.image import Image
+from tpip_pptx.table import Table
+from tpip_pptx.text import Text
 
 
 POC_PPTX_BUCKET = os.environ.get("POC_PPTX_BUCKET")

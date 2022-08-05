@@ -6,8 +6,8 @@ from pptx.table import Table, _Row, _Column, _Cell
 from pptx.dml.color import RGBColor
 from pptx.util import Inches
 
-from tag import Tag
-from constants import CommandRegexSub,CommandRegex
+from tpip_pptx.tag import Tag
+from tpip_pptx.constants import CommandRegexSub, CommandRegex
 
 
 class Table(Tag):

@@ -3,8 +3,8 @@ import base64
 import io
 
 from pptx.util import Inches
-from constants import CommandRegexSub
-from tag import Tag
+from tpip_pptx.constants import CommandRegexSub
+from tpip_pptx.tag import Tag
 
 
 class Image(Tag):

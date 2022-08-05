@@ -1,15 +1,5 @@
 from constants import CommandRegexSub
 from tag import Tag
-from pptx.dml.color import RGBColor
-from pptx.enum.dml import MSO_THEME_COLOR
-from pptx.enum.text import PP_ALIGN
-from pptx.util import Pt
-from pptx.enum.text import MSO_ANCHOR, MSO_AUTO_SIZE
-from PIL import ImageColor
-import pydash
-from pptx.util import Inches
-import enum
-import re
 
 class Text(Tag):
     def __init__(self):
