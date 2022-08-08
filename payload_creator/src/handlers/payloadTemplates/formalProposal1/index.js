@@ -1,9 +1,9 @@
 import _, { template } from "lodash";
-import fetchDataResult from "../fetchData";
+import fetchDataResult from "../../../helpers/fetchData";
 
 const formalProposal1={
-    schemeName: 'sample scheme',
-    templateKey: 'formal_proposal_1',
+    schemeName: '',
+    templateKey: '',
     trusteeName: {
         text: 'sample trustee',
         styles: {
@@ -55,9 +55,10 @@ const formalProposal1={
             charts: ["assets","liabilities"]
 }
  };
-
+export default formalProposal1;
 // export default async(event)=>{
 //     const fetchDataResult=fetchDataResult.fetchData(event,formalProposal1)
+
 
 
 //     return formalProposal1

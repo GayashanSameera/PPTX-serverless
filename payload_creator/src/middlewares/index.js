@@ -1,7 +1,7 @@
 import { lambdaHelper, responseHelper } from "../helpers"
 
 const eventMiddleware=async (event,...middlewares)=>{
-    if(event.source==='serveless-warmup'){
+    if(event.source==='serverless-warmup'){
         console.log('warmup-lamda is warm')
         return responseHelper.successResponse(event,'success');
     }

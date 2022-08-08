@@ -2,7 +2,7 @@ import commonConstants from "../constants";
 import _ from "lodash";
 import AWS from 'aws-sdk';
 
-const lamda=new AWS.lambda();
+const lamda=new AWS.Lambda();
 const {B2B_AUTH}=commonConstants;
 const {STAGE}=process.env;
 
