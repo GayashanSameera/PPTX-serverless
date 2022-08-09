@@ -34,23 +34,19 @@ class CommandRegistry:
         return self.commands.keys()
 
     def get_command(self, command_name):
-        if command_name == Command.REPLACE_IMAGE:
+        if command_name == Command.REPLACE_IMAGE.value:
             image = Image()
-            def getParams(commands_dic, presentation, slide, shape, slides, dataObj):
-               return image.replace_images(slide, CommandRegex.IMAGE.value[0], shape)
-            return getParams
-
-        elif command_name == Command.TEXT_REPLACE:
+            return image.replace_images
+         
+        elif command_name == Command.TEXT_REPLACE.value:
             text = Text()
-            def getParams(commands_dic, presentation, slide, shape, slides, dataObj):
-                return text.text_replace(slide, CommandRegex.TEXT.value[0], shape)
-            return getParams
-        
-        elif command_name == Command.UPDATE_TABLE_TEXT:
+            return text.text_replace
+            
+        elif command_name == Command.UPDATE_TABLE_TEXT.value:
             table = Table()
             return table.update_table_text
           
-        elif command_name == Command.DRAW_TABLE:
+        elif command_name == Command.DRAW_TABLE.value:
             table = Table()
             return table.drow_tables
             
@@ -79,9 +75,9 @@ class CommandExecutor:
         for shape in self.slide.shapes:
             if shape.has_text_frame:
                 if shape.text:
-                    for cmd_values in (Command):
+                    for cmd_values in commands:
                         try:
-                            self.registry.get_command(cmd_values)(commands_dic, self.presentation, self.slide,
+                            self.registry.get_command(commands_dic[cmd_values])(commands_dic, self.presentation, self.slide,
                                                                          shape, slides.index(self.slide), self.dataObj)
     
                         except Exception as e:
@@ -127,7 +123,7 @@ def generate_pptx(event, context):
         "heading":"Investment performance to 30 June 2021",
         "heading_assets":"Investment performance to 30 June 2021",
         "assetAllocation": "Asset allocation at 30 June 2021",
-        "assetChart": { "url" : "img1.png" , "size": {"left":1,"top":1, "height":3, "width":4.2}},
+        "assetChart": { "url" : "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=" , "size": {"left":1,"top":1, "height":3, "width":4.2}},
         "overallPerformance": "Overall performance",
         "OPData":{
             "styles" : {

@@ -1,13 +1,13 @@
 import enum
 
 class CommandRegex(enum.Enum):
-    IMAGE = r'\+\+\+IM (.*?) \+\+\+',
+    IMAGE = r'\+\+\+IM (.*?) \+\+\+'
     TEXT = r'\+\+\+INS (.*?) \+\+\+'
-    UPDATE_TABLE_TEXT = r'\+\+\+TB_TX_UP (.*?) \+\+\+',
-    CREATE_TABLE = r'\+\+\+TB_ADD (.*?) \+\+\+',
-    PATTERN_FOR = r'\+\+\+FOR (.*?) FOR-END\+\+\+',
-    PATTERN_CONTENT = r'\<\<(.*?)\>\>',
-    PATTERN_CONDITION = r'\(\((.*?)\)\)',
+    UPDATE_TABLE_TEXT = r'\+\+\+TB_TX_UP (.*?) \+\+\+'
+    CREATE_TABLE = r'\+\+\+TB_ADD (.*?) \+\+\+'
+    PATTERN_FOR = r'\+\+\+FOR (.*?) FOR-END\+\+\+'
+    PATTERN_CONTENT = r'\<\<(.*?)\>\>'
+    PATTERN_CONDITION = r'\(\((.*?)\)\)'
     TABLE_DRAW = r'\+\+\+TB_DRW (.*?) \+\+\+'
 
 class CommandRegexSub(enum.Enum):
