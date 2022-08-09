@@ -48,3 +48,10 @@ class Tag:
 
         return {"text": current_text}
 
+    def eval_executor(self,logic,dataObj):
+        return eval(logic,dataObj)
+        
+    def text_tag_update(self,pattern, text,dataObj):
+        match, object_value = super().get_object_values_string(pattern, text,dataObj)
+        if (object_value != False):
+            current_text = current_text.replace(str(f"{CommandRegexSub.INS.value} {match} +++"), str(object_value))

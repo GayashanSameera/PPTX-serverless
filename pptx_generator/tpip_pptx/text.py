@@ -41,7 +41,6 @@ class Text(Tag):
                         
 
     def text_tag_update(pattern, text,dataObj):
-        pattern = CommandRegex.TEXT.value
         match, object_value = super().get_object_values_string(pattern, text,dataObj)
         if (object_value != False):
             current_text = current_text.replace(str(f"{CommandRegexSub.INS.value} {match} +++"), str(object_value))

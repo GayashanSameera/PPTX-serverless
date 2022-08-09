@@ -3,12 +3,15 @@ import enum
 class CommandRegex(enum.Enum):
     IMAGE = r'\+\+\+IM (.*?) \+\+\+'
     TEXT = r'\+\+\+INS (.*?) \+\+\+'
-    UPDATE_TABLE_TEXT = r'\+\+\+TB_TX_UP (.*?) \+\+\+'
-    CREATE_TABLE = r'\+\+\+TB_ADD (.*?) \+\+\+'
-    PATTERN_FOR = r'\+\+\+FOR (.*?) FOR-END\+\+\+'
-    PATTERN_CONTENT = r'\<\<(.*?)\>\>'
-    PATTERN_CONDITION = r'\(\((.*?)\)\)'
+    UPDATE_TABLE_TEXT = r'\+\+\+TB_TX_UP (.*?) \+\+\+',
+    CREATE_TABLE = r'\+\+\+TB_ADD (.*?) \+\+\+',
+    PATTERN_FOR = r'\+\+\+FOR (.*?) FOR-END\+\+\+',
+    PATTERN_CONTENT = r'\<\<(.*?)\>\>',
+    PATTERN_CONDITION = r'\(\((.*?)\)\)',
     TABLE_DRAW = r'\+\+\+TB_DRW (.*?) \+\+\+'
+    TABLE_REMOVE = r'\+\+\+TABLE_REMOVE (.*?) \+\+\+'
+    TABLE_ROW_REMOVE = r'\+\+\+TABLE_ROW_REMOVE (.*?) \+\+\+'
+    TABLE_COLUMN_REMOVE = r'\+\+\+TABLE_COLUMN_REMOVE (.*?) \+\+\+'
 
 class CommandRegexSub(enum.Enum):
     IMG = '+++IM'
@@ -19,6 +22,10 @@ class CommandRegexSub(enum.Enum):
     TB_DRW = '+++TB_DRW'
     FOR = '+++FOR'
     FOR_END = 'FOR-END+++'
+    IF = '+++IF'
+    IF_END = 'IF-END+++'
+    RW_ID ='+++RW_ID'
+    
 
 
 class Command(enum.Enum):
@@ -29,3 +36,4 @@ class Command(enum.Enum):
     UPDATE_TABLE_TEXT = "update_table_text"
     DRAW_TABLE = "draw_tables"
     TEXT_REPLACE = "text_replace"
+    REMOVE_TABLE = "remove_tables"
