@@ -10,6 +10,7 @@ from tpip_pptx.constants import Command, CommandRegex
 from tpip_pptx.image import Image
 from tpip_pptx.table import Table
 from tpip_pptx.text import Text
+from tpip_pptx.expression import Expression
 
 
 POC_PPTX_BUCKET = os.environ.get("POC_PPTX_BUCKET")
@@ -24,7 +25,8 @@ class CommandRegistry:
             "+++TB_ADD": "replace_table",
             "+++TB_TX_UP": "update_table_text",
             "+++TB_DRW": "draw_tables",
-            "+++INS": "text_replace"
+            "+++INS": "text_replace",
+            "+++TABLE_REMOVE": "if_condition"
         }
 
     def get_commands_dictionary(self):
@@ -53,7 +55,10 @@ class CommandRegistry:
         elif command_name == Command.DRAW_TABLE:
             table = Table()
             return table.drow_tables
-            
+
+        elif command_name == Command.IF_CONDITION:
+                expression = Expression(Tag)
+                return expression.if_condition   
         else:
             raise Exception("Invalid command name")
 

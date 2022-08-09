@@ -39,7 +39,4 @@ class Text(Tag):
                             run.font.color.rgb = RGBColor(styles["font_color"][0], styles["font_color"][1], styles["font_color"][2])
                         
 
-    def text_tag_update(pattern, text,dataObj):
-        match, object_value = super().get_object_values_string(pattern, text,dataObj)
-        if (object_value != False):
-            current_text = current_text.replace(str(f"{CommandRegexSub.INS.value} {match} +++"), str(object_value))
+    

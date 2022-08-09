@@ -5,6 +5,7 @@ from copy import deepcopy
 from pptx.table import Table, _Row, _Column, _Cell
 from pptx.dml.color import RGBColor
 from pptx.util import Inches
+from lxml import etree
 
 from tpip_pptx.tag import Tag
 from tpip_pptx.constants import CommandRegexSub, CommandRegex
@@ -382,3 +383,69 @@ class Table(Tag):
 
                 table._tbl.append(new_row) 
                 return table.rows[1]
+
+        def remove_row(self,table, row):
+            tbl = table._tbl
+            tr = row._tr
+            tbl.remove(tr)
+
+    #remove tables
+        def remove_tables(self,slide,content):
+            table_remove_pattern = CommandRegex.TABLE_REMOVE.value
+            table_remove_matches = super().get_tag_from_string(table_remove_pattern, content)
+            
+            if( table_remove_matches and len(table_remove_matches) > 0):
+                table_remove_index_matches = table_remove_matches[0]
+                table_id_tag = str(f"{CommandRegexSub.TB_ID.value} {table_remove_index_matches} +++")
+                _shap_count = 0
+                for _shape in slide.shapes:
+                    if _shape.has_table: 
+                        for row in _shape.table.rows:
+                            for cell in row.cells:
+                                if table_id_tag in cell.text:
+                                    old_picture = slide.shapes[_shap_count]
+                                    old_pic = old_picture._element
+                                    old_pic.getparent().remove(old_pic)
+                                    break
+                    _shap_count += 1
+
+        def remove_table_rows(self,slide,content):
+            table_row_remove_pattern = CommandRegex.TABLE_ROW_REMOVE.value
+            table_row_remove_matches = super().get_tag_from_string(table_row_remove_pattern, content)
+            if( table_row_remove_matches and len(table_row_remove_matches) > 0):
+                table_row_remove_index_matches = table_row_remove_matches[0]
+                table_rw_id_tag = str(f"{CommandRegexSub.RW_ID.value} {table_row_remove_index_matches} +++")
+                for _shape in slide.shapes:
+                    if _shape.has_table: 
+                        for row_idx, row in enumerate(_shape.table.rows):
+                            for col_idx, cell in enumerate(row.cells):
+                                if table_row_remove_index_matches in cell.text:
+                                    row_deleted = _shape.table.rows[row_idx]
+                                    table = Table()
+                                    table.remove_row(_shape.table, row_deleted)
+                                    break
+
+        def remove_table_column(self,slide,content):
+            table_column_remove_pattern = CommandRegex.TABLE_COLUMN_REMOVE.value
+            table_column_remove_matches = super().get_tag_from_string(table_column_remove_pattern, content)
+            if( table_column_remove_matches and len(table_column_remove_matches) > 0):
+                table_column_remove_index_matches = table_column_remove_matches[0]
+                for _shape in slide.shapes:
+                    if _shape.has_table:
+                        colum_index = ""
+                        for row_idx, row in enumerate(_shape.table.rows):
+                            for col_idx, cell in enumerate(row.cells):
+                                if table_column_remove_index_matches in cell.text:
+                                    colum_index = col_idx
+                                    break
+
+                        for row_idx, row in enumerate(_shape.table.rows):
+                            for col_idx, cell in enumerate(row.cells):
+                                if col_idx == colum_index:
+                                    cell._tc.delete()
+
+                        tree = etree.ElementTree(_shape.table._tbl)
+                        for e in tree.iter():
+                            if(tree.getpath(e) == tree.getpath(_shape.table.columns[colum_index]._gridCol)):
+                                e.getparent().remove(e)
+                                break
