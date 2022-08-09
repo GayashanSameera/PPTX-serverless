@@ -3,7 +3,7 @@ import base64
 import io
 
 from pptx.util import Inches
-from tpip_pptx.constants import CommandRegexSub
+from tpip_pptx.constants import CommandRegexSub,CommandRegex
 from tpip_pptx.tag import Tag
 
 
@@ -11,7 +11,8 @@ class Image(Tag):
     def __init__(self):
         pass
 
-    def replace_images(self, slide, pattern, shape, dataObj):
+    def replace_images(self,commands_dic,presentation,slide,shape,slides,dataObj):
+        pattern = CommandRegex.IMAGE.value
         match, object_value = super().get_object_values(pattern, shape,dataObj)
 
         url = pydash.get(object_value, "url", default="")

@@ -2,14 +2,15 @@ import pydash
 from pptx.dml.color import RGBColor
 from pptx.util import Pt
 from PIL import ImageColor
-from constants import CommandRegexSub
-from tag import Tag
+from tpip_pptx.constants import CommandRegexSub,CommandRegex
+from tpip_pptx.tag import Tag
 
 class Text(Tag):
     def __init__(self):
         pass
 
-    def text_replace(self, slide, pattern, shape):
+    def text_replace(self,commands_dic,presentation,slide,shape,slides,dataObj):
+        pattern = CommandRegex.TEXT.value
         match, object_value = super().get_object_values(pattern, shape)
         super().replace_tags(str(f"{CommandRegexSub.INS.value} {match} +++"), str(object_value.get('text')), shape)
 
@@ -39,4 +40,7 @@ class Text(Tag):
                             run.font.color.rgb = RGBColor(styles["font_color"][0], styles["font_color"][1], styles["font_color"][2])
                         
 
-    
+    def text_tag_update(pattern, text,dataObj):
+        match, object_value = super().get_object_values_string(pattern, text,dataObj)
+        if (object_value != False):
+            current_text = current_text.replace(str(f"{CommandRegexSub.INS.value} {match} +++"), str(object_value))

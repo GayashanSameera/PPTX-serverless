@@ -3,6 +3,8 @@ import math
 from pptx.oxml.xmlchemy import OxmlElement
 from copy import deepcopy
 from pptx.table import Table, _Row, _Column, _Cell
+from pptx.util import Pt
+from pptx.enum.text import PP_ALIGN
 from pptx.dml.color import RGBColor
 from pptx.util import Inches
 from lxml import etree
@@ -16,7 +18,7 @@ class Table(Tag):
             pass 
 
         def update_table_text(self,commands_dic,presentation, slide, shape, slide_index, dataObj):
-            pattern = CommandRegex.UPDATE_TABLE_TEXT.value[0]
+            pattern = CommandRegex.UPDATE_TABLE_TEXT.value
             matches = super().get_tag_content(pattern, shape)
 
             if( not matches or len(matches) < 1):
@@ -56,14 +58,14 @@ class Table(Tag):
             for row in table.rows:
                 col_index = 0
                 for cell in row.cells:
-                    pattern_for = CommandRegex.PATTERN_FOR.value[0]
+                    pattern_for = CommandRegex.PATTERN_FOR.value
                     matches_for = super().get_tag_from_string(pattern_for, cell.text)
                     if( matches_for and len(matches_for) > 0):
                         for match in matches_for:
-                            pattern_condition = CommandRegex.PATTERN_CONDITION.value[0]
+                            pattern_condition = CommandRegex.PATTERN_CONDITION.value
                             matched_condition = super().get_tag_from_string(pattern_condition,match)
 
-                            pattern_content = CommandRegex.PATTERN_CONTENT.value[0]
+                            pattern_content = CommandRegex.PATTERN_CONTENT.value
                             matched_content = super().get_tag_from_string(pattern_content,match)
                             for contidion in matched_condition:
                                 object_value = pydash.get(dataObj, contidion)
@@ -85,7 +87,7 @@ class Table(Tag):
                                     print("error")
                         
 
-                    pattern_text = CommandRegex.TEXT.value[0]
+                    pattern_text = CommandRegex.TEXT.value
                     matches_text_update = super().get_tag_from_string(pattern_text, cell.text)
                     if( matches_text_update and len(matches_text_update) > 0):
                         for match in matches_text_update:
@@ -127,8 +129,22 @@ class Table(Tag):
 
                     if(styles and row_st_index in styles):
                         _styles = styles[row_st_index]
-                    if( "column_indexes" in _styles):
-                        if(col_index in _styles["column_indexes"]):
+                        if( "column_indexes" in _styles):
+                            if(col_index in _styles["column_indexes"]):
+                                if('font_size' in _styles):
+                                    para.font.size = Pt(_styles['font_size'])
+                                if('font_name' in _styles):
+                                    para.font.name = _styles['font_name']
+                                if('bold' in _styles):
+                                    para.font.bold = _styles['bold']
+                                if('italic' in _styles):
+                                    para.font.italic = _styles['italic']
+                                if("font_color" in _styles):
+                                    para.font.color.rgb = RGBColor(_styles["font_color"][0], _styles["font_color"][1],_styles["font_color"][2])
+                                if("background_color" in _styles):
+                                    cell.fill.solid()
+                                    cell.fill.fore_color.rgb = RGBColor(_styles["background_color"][0], _styles["background_color"][1],_styles["background_color"][2])
+                        else:
                             if('font_size' in _styles):
                                 para.font.size = Pt(_styles['font_size'])
                             if('font_name' in _styles):
@@ -142,44 +158,31 @@ class Table(Tag):
                             if("background_color" in _styles):
                                 cell.fill.solid()
                                 cell.fill.fore_color.rgb = RGBColor(_styles["background_color"][0], _styles["background_color"][1],_styles["background_color"][2])
-                    else:
-                        if('font_size' in _styles):
-                            para.font.size = Pt(_styles['font_size'])
-                        if('font_name' in _styles):
-                            para.font.name = _styles['font_name']
-                        if('bold' in _styles):
-                            para.font.bold = _styles['bold']
-                        if('italic' in _styles):
-                            para.font.italic = _styles['italic']
-                        if("font_color" in _styles):
-                            para.font.color.rgb = RGBColor(_styles["font_color"][0], _styles["font_color"][1],_styles["font_color"][2])
-                        if("background_color" in _styles):
+
+                    if(styles and col_st_index in styles):
+                        col_styles = styles[col_st_index]
+
+                        if('font_size' in col_styles):
+                            para.font.size = Pt(col_styles['font_size'])
+                        if('font_name' in col_styles):
+                            para.font.name = col_styles['font_name']
+                        if('bold' in col_styles):
+                            para.font.bold = col_styles['bold']
+                        if('italic' in col_styles):
+                            para.font.italic = col_styles['italic']
+                        if("font_color" in col_styles):
+                            para.font.color.rgb = RGBColor(col_styles["font_color"][0], col_styles["font_color"][1],col_styles["font_color"][2])
+                        if("background_color" in col_styles):
                             cell.fill.solid()
-                            cell.fill.fore_color.rgb = RGBColor(_styles["background_color"][0], _styles["background_color"][1],_styles["background_color"][2])
-
-                if(styles and col_st_index in styles):
-                    col_styles = styles[col_st_index]
-
-                    if('font_size' in col_styles):
-                        para.font.size = Pt(col_styles['font_size'])
-                    if('font_name' in col_styles):
-                        para.font.name = col_styles['font_name']
-                    if('bold' in col_styles):
-                        para.font.bold = col_styles['bold']
-                    if('italic' in col_styles):
-                        para.font.italic = col_styles['italic']
-                    if("font_color" in col_styles):
-                        para.font.color.rgb = RGBColor(col_styles["font_color"][0], col_styles["font_color"][1],col_styles["font_color"][2])
-                    if("background_color" in col_styles):
-                        cell.fill.solid()
-                        cell.fill.fore_color.rgb = RGBColor(col_styles["background_color"][0], col_styles["background_color"][1],col_styles["background_color"][2])
-        
-                para_index += 1
+                            cell.fill.fore_color.rgb = RGBColor(col_styles["background_color"][0], col_styles["background_color"][1],col_styles["background_color"][2])
+            
+                    para_index += 1
             except ValueError:
                 print("error")
                 
         
         def replace_tables(self,pattern,presentation,slide,shape,slide_index,dataObj):
+            pattern = CommandRegex.CREATE_TABLE.value
             match , object_value = super().get_object_values(pattern, shape)
             if(object_value):
                 super().replace_tags(str(f"{CommandRegexSub.TB_ADD.value} {match} +++"), "", shape)
@@ -187,12 +190,12 @@ class Table(Tag):
                 
                 
         def create_table(presentation, slide, shape, slide_index, dataObj):
-            row_count = pydash.get(dataObj,dataObj.cashFlows.row_count,default=5)
-            cols = pydash.get(dataObj,dataObj.cashFlows.colum_count,default=3)
-            headers = pydash.get(dataObj,dataObj.cashFlows.headers)
-            row_data = pydash.get(dataObj,dataObj.cashFlows.rows)
-            styles = pydash.get(dataObj,dataObj.cashFlows.styles)
-            table_count_per_slide = pydash.get(dataObj,dataObj.cashFlows.table_count_per_slide,default=2)
+            row_count = pydash.get(dataObj,"row_count",default=5)
+            cols = pydash.get(dataObj,"colum_count",default=3)
+            headers = pydash.get(dataObj,"headers")
+            row_data = pydash.get(dataObj,"rows")
+            styles = pydash.get(dataObj,"styles")
+            table_count_per_slide = pydash.get(dataObj,"table_count_per_slide",default=4)
             
             
             total_rows = len(row_data)
@@ -243,9 +246,9 @@ class Table(Tag):
                     left += 2
                     j += 1
 
-            end = slide_row_end
-            total_table_count -= table_count_per_slide
-            s += 1
+                end = slide_row_end
+                total_table_count -= table_count_per_slide
+                s += 1
             
             def is_extra_slide(presentation, slide_index, remove_tag):
                 extra_slide_exists = False
@@ -321,8 +324,8 @@ class Table(Tag):
                     tailEnd = SubElement(ln, 'a:tailEnd', type='none', w='med', len='med')
                     
                     
-        def drow_tables(self,presentation, slide, shape, slide_index, dataObj):
-            pattern = CommandRegex.TABLE_DRAW.value[0]
+        def drow_tables(self,commands_dic,presentation, slide, shape, slide_index, dataObj):
+            pattern = CommandRegex.TABLE_DRAW.value
             matches = super().get_tag_content(pattern, shape)
             if( not matches or len(matches) < 1):
                 return
@@ -356,8 +359,8 @@ class Table(Tag):
 
             super().replace_tags(str(f"{CommandRegexSub.TB_DRW.value} {match} +++"), "", shape)
         
-        def execute_table_drower(self,table, dataObj,styles):
-            row_data = pydash.get(dataObj,dataObj.cashFlows.rows,default=[])
+        def execute_table_drower(self,table,data,styles):
+            row_data = pydash.get(data,"rows",default=5)
             row_index = 1
             for row in row_data:
                 colum_index = 0
@@ -375,7 +378,7 @@ class Table(Tag):
                     colum_index += 1
                 row_index += 1
                 
-        def add_new_row_to_existing_table(table):
+        def add_new_row_to_existing_table(self,table):
             new_row = deepcopy(table._tbl.tr_lst[1])
             for tc in new_row.tc_lst:
                 cell = _Cell(tc, new_row.tc_lst)
