@@ -127,10 +127,23 @@ class Table(Tag):
                             cell.fill.fore_color.rgb = RGBColor(common_styles["background_color"][0], common_styles["background_color"][1],common_styles["background_color"][2])
 
                     if(styles and row_st_index in styles):
-                        global _styles 
                         _styles = styles[row_st_index]
-                    if( "column_indexes" in _styles):
-                        if(col_index in _styles["column_indexes"]):
+                        if( "column_indexes" in _styles):
+                            if(col_index in _styles["column_indexes"]):
+                                if('font_size' in _styles):
+                                    para.font.size = Pt(_styles['font_size'])
+                                if('font_name' in _styles):
+                                    para.font.name = _styles['font_name']
+                                if('bold' in _styles):
+                                    para.font.bold = _styles['bold']
+                                if('italic' in _styles):
+                                    para.font.italic = _styles['italic']
+                                if("font_color" in _styles):
+                                    para.font.color.rgb = RGBColor(_styles["font_color"][0], _styles["font_color"][1],_styles["font_color"][2])
+                                if("background_color" in _styles):
+                                    cell.fill.solid()
+                                    cell.fill.fore_color.rgb = RGBColor(_styles["background_color"][0], _styles["background_color"][1],_styles["background_color"][2])
+                        else:
                             if('font_size' in _styles):
                                 para.font.size = Pt(_styles['font_size'])
                             if('font_name' in _styles):
@@ -144,39 +157,25 @@ class Table(Tag):
                             if("background_color" in _styles):
                                 cell.fill.solid()
                                 cell.fill.fore_color.rgb = RGBColor(_styles["background_color"][0], _styles["background_color"][1],_styles["background_color"][2])
-                    else:
-                        if('font_size' in _styles):
-                            para.font.size = Pt(_styles['font_size'])
-                        if('font_name' in _styles):
-                            para.font.name = _styles['font_name']
-                        if('bold' in _styles):
-                            para.font.bold = _styles['bold']
-                        if('italic' in _styles):
-                            para.font.italic = _styles['italic']
-                        if("font_color" in _styles):
-                            para.font.color.rgb = RGBColor(_styles["font_color"][0], _styles["font_color"][1],_styles["font_color"][2])
-                        if("background_color" in _styles):
+
+                    if(styles and col_st_index in styles):
+                        col_styles = styles[col_st_index]
+
+                        if('font_size' in col_styles):
+                            para.font.size = Pt(col_styles['font_size'])
+                        if('font_name' in col_styles):
+                            para.font.name = col_styles['font_name']
+                        if('bold' in col_styles):
+                            para.font.bold = col_styles['bold']
+                        if('italic' in col_styles):
+                            para.font.italic = col_styles['italic']
+                        if("font_color" in col_styles):
+                            para.font.color.rgb = RGBColor(col_styles["font_color"][0], col_styles["font_color"][1],col_styles["font_color"][2])
+                        if("background_color" in col_styles):
                             cell.fill.solid()
-                            cell.fill.fore_color.rgb = RGBColor(_styles["background_color"][0], _styles["background_color"][1],_styles["background_color"][2])
-
-                if(styles and col_st_index in styles):
-                    col_styles = styles[col_st_index]
-
-                    if('font_size' in col_styles):
-                        para.font.size = Pt(col_styles['font_size'])
-                    if('font_name' in col_styles):
-                        para.font.name = col_styles['font_name']
-                    if('bold' in col_styles):
-                        para.font.bold = col_styles['bold']
-                    if('italic' in col_styles):
-                        para.font.italic = col_styles['italic']
-                    if("font_color" in col_styles):
-                        para.font.color.rgb = RGBColor(col_styles["font_color"][0], col_styles["font_color"][1],col_styles["font_color"][2])
-                    if("background_color" in col_styles):
-                        cell.fill.solid()
-                        cell.fill.fore_color.rgb = RGBColor(col_styles["background_color"][0], col_styles["background_color"][1],col_styles["background_color"][2])
-        
-                para_index += 1
+                            cell.fill.fore_color.rgb = RGBColor(col_styles["background_color"][0], col_styles["background_color"][1],col_styles["background_color"][2])
+            
+                    para_index += 1
             except ValueError:
                 print("error")
                 
