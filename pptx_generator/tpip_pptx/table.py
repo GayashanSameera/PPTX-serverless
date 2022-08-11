@@ -183,13 +183,13 @@ class Table(Tag):
         
         def replace_tables(self,pattern,presentation,slide,shape,slide_index,dataObj):
             pattern = CommandRegex.CREATE_TABLE.value
-            match , object_value = super().get_object_values(pattern, shape)
+            match , object_value = super().get_object_values(pattern,shape,dataObj)
             if(object_value):
                 super().replace_tags(str(f"{CommandRegexSub.TB_ADD.value} {match} +++"), "", shape)
                 self.create_table(presentation, slide, shape, slide_index, object_value)
                 
                 
-        def create_table(presentation, slide, shape, slide_index, dataObj):
+        def create_table(self,presentation, slide, shape, slide_index, dataObj):
             row_count = pydash.get(dataObj,"row_count",default=5)
             cols = pydash.get(dataObj,"colum_count",default=3)
             headers = pydash.get(dataObj,"headers")
@@ -225,7 +225,7 @@ class Table(Tag):
 
                 if(s > 0 and current_slide != s):
                     for new_slide_shape in presentation.slides[slide_index + s].shapes:
-                        extra_slide_exists = is_extra_slide(presentation, slide_index + s, True)
+                        extra_slide_exists = self.is_extra_slide(presentation, slide_index + s, True)
                         if(extra_slide_exists):
                             break
                     current_slide = s
@@ -237,12 +237,12 @@ class Table(Tag):
                 while j < table_count:
                     shape = presentation.slides[slide_index + s].shapes.add_table(row_count + 1, cols, Inches(left) , Inches(styles["top"]), Inches(styles["width"]), Inches(styles["row_height"]))
                     table = shape.table
-                    tables_headers(table, headers)
+                    self.tables_headers(table, headers)
 
                     slide_row_start = (row_count * j ) + 1 + end
                     slide_row_end = slide_row_start + (row_count - 1)
 
-                    tables_rows(table,row_data, slide_row_start, slide_row_end ,total_rows )
+                    self.tables_rows(table,row_data, slide_row_start, slide_row_end ,total_rows )
                     left += 2
                     j += 1
 
@@ -250,7 +250,7 @@ class Table(Tag):
                 total_table_count -= table_count_per_slide
                 s += 1
             
-            def is_extra_slide(presentation, slide_index, remove_tag):
+        def is_extra_slide(self,presentation, slide_index, remove_tag):
                 extra_slide_exists = False
                 extra = 'EXTRA_SLIDE'
                 for new_slide_shape in presentation.slides[slide_index].shapes:
@@ -264,64 +264,64 @@ class Table(Tag):
                 return extra_slide_exists
             
             
-            def tables_headers(table, headers):
-                i = 0
-                for header in headers:
-                    table.cell(0, i).text = header
-                    cell = table.cell(0, i)
-                    cell.fill.solid()
-                    cell.fill.fore_color.rgb = RGBColor(200, 253, 251)
-                    _set_cell_border(cell,"949595", '12000')
-                    para = cell.text_frame.paragraphs[0]
-                    para.font.bold = True
-                    para.font.size = Pt(5)
-                    para.font.name = 'Comic Sans MS'
-                    para.font.color.rgb = RGBColor(19, 170, 246)
-                    table.columns[i].width = Inches(0.6)
-                    i += 1
+        def tables_headers(self,table, headers):
+            i = 0
+            for header in headers:
+                table.cell(0, i).text = header
+                cell = table.cell(0, i)
+                cell.fill.solid()
+                cell.fill.fore_color.rgb = RGBColor(200, 253, 251)
+                self._set_cell_border(cell,"949595", '12000')
+                para = cell.text_frame.paragraphs[0]
+                para.font.bold = True
+                para.font.size = Pt(5)
+                para.font.name = 'Comic Sans MS'
+                para.font.color.rgb = RGBColor(19, 170, 246)
+                table.columns[i].width = Inches(0.6)
+                i += 1
                     
-            def tables_rows(table, rowData, start, end,totalRows):
-                j = start
-                cell_start = 1
+        def tables_rows(self,table, rowData, start, end,totalRows):
+            j = start
+            cell_start = 1
 
-                entCount = end
-                if end > totalRows:
-                    entCount = totalRows
+            entCount = end
+            if end > totalRows:
+                entCount = totalRows
 
-                while j < entCount + 1:
-                    element = rowData[j - 1]
-                    k = 0
-                    if element:
-                        for key, value in element.items():
-                            table.cell(cell_start, k).text = value
-                            cell = table.cell(cell_start, k)
-                            cell.fill.solid()
-                            cell.fill.fore_color.rgb = RGBColor(228, 228, 228)
-                            _set_cell_border(cell,"949595", '12000')
-                            para = cell.text_frame.paragraphs[0]
-                            para.font.size = Pt(6)
-                            para.font.name = 'Comic Sans MS'
-                            k += 1
-                    j += 1
-                    cell_start += 1
+            while j < entCount + 1:
+                element = rowData[j - 1]
+                k = 0
+                if element:
+                    for key, value in element.items():
+                        table.cell(cell_start, k).text = value
+                        cell = table.cell(cell_start, k)
+                        cell.fill.solid()
+                        cell.fill.fore_color.rgb = RGBColor(228, 228, 228)
+                        self._set_cell_border(cell,"949595", '12000')
+                        para = cell.text_frame.paragraphs[0]
+                        para.font.size = Pt(6)
+                        para.font.name = 'Comic Sans MS'
+                        k += 1
+                j += 1
+                cell_start += 1
                     
-            def SubElement(parent, tagname, **kwargs):
-                element = OxmlElement(tagname)
-                element.attrib.update(kwargs)
-                parent.append(element)
-                return element
-            
-            def _set_cell_border(cell, border_color="000000", border_width='12700'):
-                tc = cell._tc
-                tcPr = tc.get_or_add_tcPr()
-                for lines in ['a:lnL','a:lnR','a:lnT','a:lnB']:
-                    ln = SubElement(tcPr, lines, w=border_width, cap='flat', cmpd='sng', algn='ctr')
-                    solidFill = SubElement(ln, 'a:solidFill')
-                    srgbClr = SubElement(solidFill, 'a:srgbClr', val=border_color)
-                    prstDash = SubElement(ln, 'a:prstDash', val='solid')
-                    round_ = SubElement(ln, 'a:round')
-                    headEnd = SubElement(ln, 'a:headEnd', type='none', w='med', len='med')
-                    tailEnd = SubElement(ln, 'a:tailEnd', type='none', w='med', len='med')
+        def SubElement(self,parent, tagname, **kwargs):
+            element = OxmlElement(tagname)
+            element.attrib.update(kwargs)
+            parent.append(element)
+            return element
+        
+        def _set_cell_border(self,cell, border_color="000000", border_width='12700'):
+            tc = cell._tc
+            tcPr = tc.get_or_add_tcPr()
+            for lines in ['a:lnL','a:lnR','a:lnT','a:lnB']:
+                ln = self.SubElement(tcPr, lines, w=border_width, cap='flat', cmpd='sng', algn='ctr')
+                solidFill = self.SubElement(ln, 'a:solidFill')
+                srgbClr = self.SubElement(solidFill, 'a:srgbClr', val=border_color)
+                prstDash = self.SubElement(ln, 'a:prstDash', val='solid')
+                round_ = self.SubElement(ln, 'a:round')
+                headEnd = self.SubElement(ln, 'a:headEnd', type='none', w='med', len='med')
+                tailEnd = self.SubElement(ln, 'a:tailEnd', type='none', w='med', len='med')
                     
                     
         def drow_tables(self,commands_dic,presentation, slide, shape, slide_index, dataObj):

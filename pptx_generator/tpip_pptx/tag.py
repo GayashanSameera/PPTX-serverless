@@ -7,7 +7,7 @@ class Tag:
     def __init__(self, pattern):
         self.pattern = pattern
 
-    def get_tag_content(self, pattern, shape):
+    def get_tag_content(self, pattern, shape): 
         matches = re.findall(pattern, shape.text)
         return matches
 
@@ -20,11 +20,11 @@ class Tag:
                     new_text = cur_text.replace(replaced_for, replaced_text)
                     run.text = new_text
                     
-    def check_tag_exist(tag, shape):
+    def check_tag_exist(self,tag, shape):
         matches = tag in shape.text
         return matches
 
-    def get_object_values(self, pattern, shape,dataObj):
+    def get_object_values(self,pattern,shape,dataObj):
         matches = self.get_tag_content(pattern, shape)
         if (not matches or len(matches) < 1):
             return
@@ -52,6 +52,9 @@ class Tag:
         return eval(logic,dataObj)
         
     def text_tag_update(self,pattern, text,dataObj):
-        match, object_value = super().get_object_values_string(pattern, text,dataObj)
+        match , object_value = self.get_object_values_string(pattern, text,dataObj)
         if (object_value != False):
-            current_text = current_text.replace(str(f"{CommandRegexSub.INS.value} {match} +++"), str(object_value))
+                current_text = current_text.replace(str(f"{CommandRegexSub.INS.value} {match} +++"), str(object_value))
+
+        return {"text": current_text}
+        

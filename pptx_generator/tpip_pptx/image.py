@@ -14,6 +14,7 @@ class Image(Tag):
     def replace_images(self,commands_dic,presentation,slide,shape,slides,dataObj):
         pattern = CommandRegex.IMAGE.value
         match, object_value = super().get_object_values(pattern, shape,dataObj)
+        
 
         url = pydash.get(object_value, "url", default="")
         left = pydash.get(object_value, "size.left", default=1)

@@ -21,12 +21,11 @@ class CommandRegistry:
         self.commands = {
             "+++IF": "if_condition",
             "+++FOR": "for_loop",
-            "+++IM": "replace_image",
+            "+++IM": "replace_images",
             "+++TB_ADD": "replace_table",
             "+++TB_TX_UP": "update_table_text",
             "+++TB_DRW": "draw_tables",
-            "+++INS": "text_replace",
-            "+++TABLE_REMOVE": "if_condition"
+            "+++INS": "text_replace"
         }
 
     def get_commands_dictionary(self):
@@ -51,10 +50,14 @@ class CommandRegistry:
         elif command_name == Command.DRAW_TABLE.value:
             table = Table()
             return table.drow_tables
-
+        
+        elif command_name == Command.REPLACE_TABLE.value:
+            table = Table()
+            return table.replace_tables
+                 
         elif command_name == Command.IF_CONDITION:
-                expression = Expression(Tag)
-                return expression.if_condition   
+                expression = Expression()
+                return expression.if_condition    
         else:
             raise Exception("Invalid command name")
 
@@ -81,12 +84,13 @@ class CommandExecutor:
             if shape.has_text_frame:
                 if shape.text:
                     for cmd_values in commands:
+                    
                         try:
                             self.registry.get_command(commands_dic[cmd_values])(commands_dic, self.presentation, self.slide,
                                                                          shape, slides.index(self.slide), self.dataObj)
     
                         except Exception as e:
-                            print(e.__class__)
+                            print(e)
 
 
 def generate_pptx(event, context):
