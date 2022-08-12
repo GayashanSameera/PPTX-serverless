@@ -1,10 +1,10 @@
-import { lambdaHelper, responseHelper } from "../helpers"
+import { lambdaHelper, responseHelper } from "../helpers";
 
-const eventMiddleware=async (event,...middlewares)=>{
+const eventMiddleware=async(event,...middlewares)=>{
     if(event.source==='serverless-warmup'){
-        console.log('warmup-lamda is warm')
+        console.log('warmup-lamda is warm');
         return responseHelper.successResponse(event,'success');
-    }
+    };
     
     let result=null;
     if(typeof event.body==="string"){
@@ -22,14 +22,12 @@ const eventMiddleware=async (event,...middlewares)=>{
         if(error.message==='400')
         return responseHelper.errorResponse(event,400,"invalid parameters");
         if(error.message==='401')
-        return responseHelper.errorResponse(event,401,'unauthorized')
+        return responseHelper.errorResponse(event,401,'unauthorized');
         if(error.message==='505')
-        return responseHelper.errorResponse(event,505,'invalid')
+        return responseHelper.errorResponse(event,505,'invalid');
     }
-}
-
-
-export {
-    eventMiddleware,
 };
+
+
+export default eventMiddleware;
      

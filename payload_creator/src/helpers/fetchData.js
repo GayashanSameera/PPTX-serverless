@@ -17,6 +17,8 @@ const fetchDataResult={
         responseDataArray.analytics=getFetchData.analytics(event);
         if(_.has(fetchDataObject,'charts'))
         responseDataArray.charts=getFetchData.charts(event);
+        
+        return responseDataArray;
     }
 };
 

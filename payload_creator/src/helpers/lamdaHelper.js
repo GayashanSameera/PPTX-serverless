@@ -6,7 +6,7 @@ const lamda=new AWS.Lambda();
 const {B2B_AUTH}=commonConstants;
 const {STAGE}=process.env;
 
-let event=undefined;
+let _event=undefined;
 const lambdaHelper={
     intializeEvent:event=>{
         _event=event;

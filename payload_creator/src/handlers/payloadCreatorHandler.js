@@ -7,20 +7,29 @@ import { generateKey } from "crypto";
 
 
 const payloadCreatorHandler={
-  generatePPTX: (event) => {
+  generatePPTX: async (event) => {
     
-    
+    console.log("Testinmg ",JSON.stringify(event));
     
     //createPayload
     //get responce from createPayload
-    const template = createPayload(event);
+    try {
+      const template = createPayload(event);
+      return responseHelper.successResponse(event,'Successfully Fetched Template',template,true)
+
+    } catch (error) {
+      return responseHelper.errorResponse(event,500,"create payload Failed")
+    }
+
+  
     
     //call to python service using  createPayload responce 
 
 
   },
 
-   createPayload:(event)=>{
+   createPayload:async (event)=>{
+    let updatedTempalate={};
      
     
     try{
@@ -30,14 +39,15 @@ const payloadCreatorHandler={
 
      
       // fetch data using template keys
-      const fetchDataResult=fetchDataResult.fetchData(event,formalProposal1)
+      const fetchDataResult= await fetchDataResult.fetchData(event,formalProposal1)
 
       //hooks for update template using fetced data
       if(generateTemplate[templateKey]){
-      return   generateTemplate[templateKey](payloadTemplate,fetchDataResult)
-       generate
+        
+       return updatedTempalate= await generateTemplate[templateKey](payloadTemplate,fetchDataResult)
+       
       }
-      // return responseHelper.successResponse(event,'Successfully Fetched Template',payloadTemplate,true)
+      // return responseHelper.successResponse(event,'Successfully Fetched Template',updatedTemplate,true)
       
 
     }catch{

@@ -15,7 +15,7 @@ const payloadCreatorSchema=Joi.object().keys({
         styles:Joi.object().required(), }).required(),
     imageOne:Joi.string().base64().required(),
     sample_data_1:Joi.object({
-        data:Joi.array().items(joi.string().required(),Joi.number().required()),
+        data:Joi.array().items(Joi.string().required(),Joi.number().required()),
         textStyles:Joi.object().required(),}).required(),
     sample_data_2:Joi.array().items({
         name:Joi.string().required(),
