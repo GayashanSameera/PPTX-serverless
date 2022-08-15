@@ -1,13 +1,25 @@
 import Joi from "@hapi/joi";
 import { join } from "lodash";
 
-const payloadCreatorSchema=Joi.object().keys({
+const requestPayloadCreatorSchema=Joi.object().keys({
     schemeId:Joi.string().required(),
     scheme:Joi.string().required(),
     templateKey:Joi.string().required(),
     outPutFileName:Joi.string().required(),
     destBucketName:Joi.string().required(),
     destPath:Joi.string().required(),
+    templateKey:Joi.string().required(),
+    
+});
+
+
+const responsePayloadCreatorSchema=Joi.object().keys({
+    // schemeId:Joi.string().required(),
+    // scheme:Joi.string().required(),
+    // templateKey:Joi.string().required(),
+    // outPutFileName:Joi.string().required(),
+    // destBucketName:Joi.string().required(),
+    // destPath:Joi.string().required(),
     schemeName:Joi.string().required(),
     templateKey:Joi.string().required(),
     trusteeName:Joi.object({
@@ -38,16 +50,18 @@ const payloadCreatorSchema=Joi.object().keys({
     })
 });
 
-const generatePPTXValidator=(obj)=>{
+const payloadCreatorMiddleware={
+
+generatePPTXValidator:(event)=>{
     if(!event.body) throw Error("400");
 
     const {schemeName,templateKey,trusteeName,text,
         styles,imageOne,sample_data_1,sample_data_2,
         data,age,name,cashFlows,headers,row_count,
         colum_count,table_count_per_slide,dimensions,rows,
-    dataTable_rowName,dataTtable_columnName,dataFetch,scheme,charts,analytics}=obj
+    dataTable_rowName,dataTtable_columnName,dataFetch,scheme,charts,analytics}=event
 
-    const {error}=payloadCreatorSchema.validate({
+    const {error}=responsePayloadCreatorSchema.validate({
         schemeName,templateKey,trusteeName,text,
         styles,imageOne,sample_data_1,sample_data_2,
         data,age,name,cashFlows,headers,row_count,
@@ -55,25 +69,22 @@ const generatePPTXValidator=(obj)=>{
     dataTable_rowName,dataTtable_columnName,dataFetch,scheme,charts,analytics,
 });
     if(error) throw Error ('400');
-};
+},
 
-
-
-const requestPPTXValidator=(event)=>{
+requestPPTXValidator:(event)=>{
     if(!event.body) throw Error('400');
+    
 
     const {schemeId,scheme,templateKey,outPutFileName,destBucketName,destPath}=event.body
-
-    const {error}=payloadCreatorSchema.validate({
+    const {error}=requestPayloadCreatorSchema.validate({
+        
         schemeId,scheme,templateKey,outPutFileName,destBucketName,destPath,
     });
     if(error) throw Error('400');
+    
 
 
 }
-
-
-export default{
-    generatePPTXValidator,
-    requestPPTXValidator,
 }
+
+export default payloadCreatorMiddleware;

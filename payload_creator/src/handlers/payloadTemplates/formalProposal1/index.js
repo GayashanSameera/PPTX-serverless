@@ -1,7 +1,7 @@
 import _, { template } from "lodash";
 import fetchDataResult from "../../../helpers/fetchData";
 
-const formalProposal1={
+const FORMAL_PROPOSAL1={
     "schemeName": "dfsdf",
     "templateKey": "",
     "trusteeName": {
@@ -55,7 +55,7 @@ const formalProposal1={
             "charts": ["assets","liabilities"]
 }
  };
-export default formalProposal1;
+export default FORMAL_PROPOSAL1;
 // export default async(event)=>{
 //     const fetchDataResult=fetchDataResult.fetchData(event,formalProposal1)
 
