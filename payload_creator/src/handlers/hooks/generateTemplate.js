@@ -1446,13 +1446,6 @@
         }
     }
     return {...templateObj,...fetchDataResult}
-      //    const template = {};
-      //    Object.keys(templateObj)
-      //    .forEach(obj => template[obj] =
-      //    (fetchDataResult.hasOwnProperty(obj) ? fetchDataResult[obj] : templateObj[obj]));
-         
-      //  return template;
-   
     }
    
    }

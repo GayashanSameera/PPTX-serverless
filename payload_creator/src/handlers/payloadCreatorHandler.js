@@ -2,7 +2,7 @@ import {responseHelper,fetchDataResult} from "../helpers"
 import * as payloadTemplates from "./payloadTemplates"
 //import {fetchDataResult} from "../helpers/fetchData";
 //import FORMAL_PROPOSAL1 from "./payloadTemplates/formalProposal1";
-import { generatedTemplate } from "./hooks";
+import * as generatedTemplate  from "./hooks";
 import { generateKey } from "crypto";
 
 

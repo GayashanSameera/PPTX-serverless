@@ -1,4 +1,4 @@
 
-import {generatedTemplate} from './generateTemplate'
+import generatedTemplate from './generateTemplate'
 
-export const generateTemplate={ generatedTemplate }
+export { generatedTemplate }
