@@ -50,14 +50,22 @@ class CommandRegistry:
         elif command_name == Command.DRAW_TABLE.value:
             table = Table()
             return table.drow_tables
-        
+
         elif command_name == Command.REPLACE_TABLE.value:
             table = Table()
             return table.replace_tables
-                 
-        elif command_name == Command.IF_CONDITION:
+
+        elif command_name == Command.REMOVE_TABLE.value:
+            table = Table()
+            return table.remove_tables
+
+        elif command_name == Command.IF_CONDITION.value:
                 expression = Expression()
-                return expression.if_condition    
+                return expression.if_condition 
+
+        elif command_name == Command.FOR_LOOP.value:
+                expression = Expression()
+                return expression.for_loop   
         else:
             raise Exception("Invalid command name")
 
@@ -80,45 +88,33 @@ class CommandExecutor:
 
         # find commands in the presentation using 'commands' list & execute
         slides = [self.slide for self.slide in self.presentation.slides]
-        for shape in self.slide.shapes:
-            if shape.has_text_frame:
-                if shape.text:
-                    for cmd_values in commands:
-                    
-                        try:
-                            self.registry.get_command(commands_dic[cmd_values])(commands_dic, self.presentation, self.slide,
-                                                                         shape, slides.index(self.slide), self.dataObj)
-    
-                        except Exception as e:
-                            print(e)
+        for slide in slides:
+            for shape in slide.shapes:
+                if shape.has_text_frame:
+                    if shape.text:
+                        for cmd_values in commands:
+                            try:
+                                self.registry.get_command(commands_dic[cmd_values])(commands_dic, self.presentation, self.slide,
+                                                                            shape, slides.index(self.slide), self.dataObj)
+        
+                            except Exception as e:
+                                print(e)
 
 
 def generate_pptx(event, context):
     s3_client = boto3.client('s3')
-    response = s3_client.get_object(Bucket=POC_PPTX_BUCKET, Key='task.pptx')
+    response = s3_client.get_object(Bucket=POC_PPTX_BUCKET, Key='demo.pptx')
     data = response['Body'].read()
 
-    f = open("/tmp/task.pptx", "wb")
+    f = open("/tmp/demo.pptx", "wb")
     f.write(data)
     f.close()
-    presentationObject = Presentation('/tmp/task.pptx')
+    presentationObject = Presentation('/tmp/demo.pptx')
     dataObj = {
         
-        "schemeName": {
-            "text": "XYZ Pension Scheme",
-            "styles": {
-                    "name": "Comic Sans MS",
-                    "size": "40",
-                    "italic": "True",
-                    "bold": "True",
-                    "alignment": "center",
-                    "underline": "True",
-                    "font_color": "#FFFF00"
-                
-            }
-        },
+        "schemeName": "XYZ Pension Scheme",
         "title": {
-            "text": "Q2 2021 Summary Reporttt",
+            "text": "Q2 2021 Summary Report",
             "styles": {
                     "name": "Comic Sans MS",
                     "size": "50",
@@ -129,7 +125,7 @@ def generate_pptx(event, context):
                     "font_color": "#FF5733"
                 }
             },
-        "heading":"Investment performance to 30 June 2021",
+        "heading": "Investment performance to 30 June 2021",
         "heading_assets":"Investment performance to 30 June 2021",
         "assetAllocation": "Asset allocation at 30 June 2021",
         "assetChart": { "url" : "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=" , "size": {"left":1,"top":1, "height":3, "width":4.2}},
@@ -279,7 +275,7 @@ def generate_pptx(event, context):
             }
         },
         "position": "SSE",
-        "city": "NW",
+        "city1": "NW",
         "image_title": "This is a sample image",
         "sample_image": { "url" : "Sample-image.png" , "size": {"left":1,"top":1, "height":3, "width":8}},
         "project_description": "React , Node , AWS serverless",

@@ -183,7 +183,7 @@ class Table(Tag):
         
         def replace_tables(self,pattern,presentation,slide,shape,slide_index,dataObj):
             pattern = CommandRegex.CREATE_TABLE.value
-            match , object_value = super().get_object_values(pattern,shape,dataObj)
+            match , object_value = super().get_object_values(pattern, shape, dataObj)
             if(object_value):
                 super().replace_tags(str(f"{CommandRegexSub.TB_ADD.value} {match} +++"), "", shape)
                 self.create_table(presentation, slide, shape, slide_index, object_value)
