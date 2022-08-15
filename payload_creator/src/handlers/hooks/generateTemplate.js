@@ -1,6 +1,6 @@
 export default {
 
-    FORMAL_PROPOSAL1 :(templateObj,fetchDataResult)=>{
+    FORMAL_PROPOSAL1 :async(templateObj,fetchDataResult)=>{
       fetchDataResult = {
         "schemeName": "XYZ Pension Scheme",
         "title": "Q2 2021 Summary Report",
