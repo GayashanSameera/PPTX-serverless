@@ -12,6 +12,8 @@ const fetchDataResult={
         console.log('fetchDataResult template',template );
         const responseDataArray={};
         const fetchDataObject=_.get(template,'dataFetch',{});
+        console.log('fetchDataResult fetchDataObject',fetchDataObject );
+        console.log('fetchDataResult has ',_.has(fetchDataObject,'scheme') );
         if(_.has(fetchDataObject,'scheme'))
         responseDataArray.scheme=getFetchData.scheme(event);
         if(_.has(fetchDataObject,'analytics'))
