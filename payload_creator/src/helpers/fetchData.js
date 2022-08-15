@@ -2,9 +2,9 @@
 
 import _ from "lodash";
 const getFetchData={
-    scheme:async(event)=>{},
-    analytics:async(event)=>{},
-    charts:async(event)=>{}};
+    scheme:async(event)=>{ return null;},
+    analytics:async(event)=>{return null;},
+    charts:async(event)=>{return null;}};
 
 
 const fetchDataResult={
