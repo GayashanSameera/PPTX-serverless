@@ -1,4 +1,4 @@
-export default {
+const generatedTemplate = {
 
     FORMAL_PROPOSAL1 :async(templateObj,fetchDataResult)=>{
       fetchDataResult = {
@@ -1448,4 +1448,5 @@ export default {
     return {...templateObj,...fetchDataResult}
     }
    
-   }
+   };
+   export default generatedTemplate;
