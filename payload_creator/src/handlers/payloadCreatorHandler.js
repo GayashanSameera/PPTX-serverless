@@ -20,10 +20,11 @@ const payloadCreatorHandler={
        console.log("event",templateKey)
       const payloadTemplate= payloadTemplates[templateKey]
       
-      console.log("payloadTemplate",payloadTemplate)
+      console.log("payloadTemplate",payloadTemplate);
      
       // fetch data using template keys
-      const fetchedData= await fetchDataResult.fetchData(event,payloadTemplate)
+      const fetchedData= await fetchDataResult.fetchData(event,payloadTemplate);
+      console.log("fetchedData",fetchedData);
 
       //hooks for update template using fetched data
       if(generatedTemplate[templateKey]){
