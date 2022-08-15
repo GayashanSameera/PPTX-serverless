@@ -1,8 +1,8 @@
-import {responseHelper} from "../helpers"
+import {responseHelper,fetchDataResult} from "../helpers"
 import payloadTemplates from "./payloadTemplates"
-import {fetchDataResult} from "../helpers/fetchData";
-import FORMAL_PROPOSAL1 from "./payloadTemplates/formalProposal1";
-import { hooks } from "./hooks";
+//import {fetchDataResult} from "../helpers/fetchData";
+//import FORMAL_PROPOSAL1 from "./payloadTemplates/formalProposal1";
+import { generatedTemplate } from "./hooks";
 import { generateKey } from "crypto";
 
 
@@ -10,7 +10,7 @@ const payloadCreatorHandler={
   
 
    createPayload:async (event)=>{
-    let updatedTempalate={};
+    let updatedTemplate={};
      
     
     try{
@@ -18,18 +18,17 @@ const payloadCreatorHandler={
        //read selected template
        
        console.log("event",templateKey)
-      const payloadTemplate=await payloadTemplates[templateKey](event)
+      const payloadTemplate= payloadTemplates[templateKey]
       
-
+      console.log("payloadTemplate",payloadTemplate)
      
       // fetch data using template keys
-      console.log("Template",FORMAL_PROPOSAL1);
-      const fetchDataResult= await fetchDataResult.fetchData(event,FORMAL_PROPOSAL1)
+      const fetchedData= await fetchDataResult.fetchData(event,payloadTemplate)
 
-      //hooks for update template using fetced data
-      if(generateTemplate[templateKey]){
+      //hooks for update template using fetched data
+      if(generatedTemplate[templateKey]){
         
-       return updatedTempalate= await generateTemplate[templateKey](payloadTemplate,fetchDataResult)
+       return updatedTemplate= await generatedTemplate[templateKey](payloadTemplate,fetchedData)
        
       }
       // return responseHelper.successResponse(event,'Successfully Fetched Template',updatedTemplate,true)

@@ -2,7 +2,7 @@ import commonConstants from "../constants";
 import _ from "lodash";
 import AWS from 'aws-sdk';
 
-const lamda=new AWS.Lambda();
+const lambda=new AWS.Lambda();
 const {B2B_AUTH}=commonConstants;
 const {STAGE}=process.env;
 
@@ -20,10 +20,10 @@ const lambdaHelper={
             params.payload=JSON.stringify(payload);
         }
 
-        const{Payload} =await lamda.invoke(params).promise();
+        const{Payload} =await lambda.invoke(params).promise();
         const {statusCode=null,body=null}=JSON.parse(Payload);
         if(!statusCode){
-            throw Error('Something Went Wrong While invoking Lamda Request-Response')
+            throw Error('Something Went Wrong While invoking Lambda Request-Response')
         }
         const {_body}=JSON.parse(body);
         
@@ -33,7 +33,7 @@ const lambdaHelper={
         if(_body&&_body.message){
             throw Error(_body.message)
         }
-        throw Error('Something Went Wrong While invoking Lamda Request-Response')
+        throw Error('Something Went Wrong While invoking Lambda Request-Response')
 
     },
     

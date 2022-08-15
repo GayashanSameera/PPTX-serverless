@@ -1,6 +1,6 @@
 export const generatedTemplate={
 
-    formalProposal :(templateObj,fetchDataResult)=>{
+    FORMAL_PROPOSAL1 :(templateObj,fetchDataResult)=>{
       fetchDataResult = {
         "schemeName": "XYZ Pension Scheme",
         "title": "Q2 2021 Summary Report",
