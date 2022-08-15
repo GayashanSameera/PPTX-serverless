@@ -1,5 +1,5 @@
 import {responseHelper,fetchDataResult} from "../helpers"
-import payloadTemplates from "./payloadTemplates"
+import * as payloadTemplates from "./payloadTemplates"
 //import {fetchDataResult} from "../helpers/fetchData";
 //import FORMAL_PROPOSAL1 from "./payloadTemplates/formalProposal1";
 import { generatedTemplate } from "./hooks";
