@@ -1,6 +1,6 @@
-const generatedTemplate = {
 
-    FORMAL_PROPOSAL1 :async(templateObj,fetchDataResult)=>{
+
+   const  FORMAL_PROPOSAL1=async(templateObj,fetchDataResult)=>{
       fetchDataResult = {
         "schemeName": "XYZ Pension Scheme",
         "title": "Q2 2021 Summary Report",
@@ -1447,6 +1447,6 @@ const generatedTemplate = {
     }
     return {...templateObj,...fetchDataResult}
     }
-   
-   };
-   export default generatedTemplate;
+
+
+   export default {FORMAL_PROPOSAL1};
