@@ -30,11 +30,11 @@ class CommandRegexSub(enum.Enum):
 
 
 class Command(enum.Enum):
-    IF_CONDITION = "if_condition"
-    FOR_LOOP = "for_loop"
-    REPLACE_IMAGE = "replace_images"
-    REPLACE_TABLE = "replace_table"
+    # IF_CONDITION = "if_condition"
+    # FOR_LOOP = "for_loop"
+    # REPLACE_IMAGE = "replace_images"
+    # REPLACE_TABLE = "replace_table"
     UPDATE_TABLE_TEXT = "update_table_text"
     DRAW_TABLE = "draw_tables"
-    TEXT_REPLACE = "text_replace"
-    REMOVE_TABLE = "remove_tables"
+    # TEXT_REPLACE = "text_replace"
+    # REMOVE_TABLE = "remove_tables"

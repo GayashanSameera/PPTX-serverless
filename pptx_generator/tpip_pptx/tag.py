@@ -7,8 +7,11 @@ class Tag:
     def __init__(self, pattern):
         self.pattern = pattern
 
-    def get_tag_content(self, pattern, shape): 
+    def get_tag_content(self, pattern, shape):
+        print("pattern111",pattern)
+        print("shape.text",shape.text) 
         matches = re.findall(pattern, shape.text)
+        print("get_tag_content-matches",matches)
         return matches
 
     def replace_tags(self, replaced_for, replaced_text, shape):
@@ -33,7 +36,9 @@ class Tag:
             return match, object_value
 
     def get_tag_from_string(self,pattern, string):
+        print("pattern>>>>>>",pattern,"string?////////////",string)
         matches = re.findall(pattern, string)
+        print("get_tag_string",matches)
         return matches
 
     # def get_object_values_string(self, pattern, text,dataObj):
@@ -72,7 +77,7 @@ class Tag:
     def eval_executor(self,logic,dataObj):
         return eval(logic,dataObj)
         
-    def text_tag_update(self,pattern, text,dataObj):
-        match, object_value = super().get_object_values_string(pattern, text,dataObj)
-        if (object_value != False):
-            current_text = current_text.replace(str(f"{CommandRegexSub.INS.value} {match} +++"), str(object_value))
+    # def text_tag_update(self,pattern, text,dataObj):
+    #     match, object_value = super().get_object_values_string(pattern, text,dataObj)
+    #     if (object_value != False):
+    #         current_text = current_text.replace(str(f"{CommandRegexSub.INS.value} {match} +++"), str(object_value))

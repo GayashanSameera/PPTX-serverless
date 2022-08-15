@@ -35,37 +35,39 @@ class CommandRegistry:
         return self.commands.keys()
 
     def get_command(self, command_name):
-        if command_name == Command.REPLACE_IMAGE.value:
-            image = Image()
-            return image.replace_images
+        # if command_name == Command.REPLACE_IMAGE.value:
+        #     image = Image()
+        #     return image.replace_images
          
-        elif command_name == Command.TEXT_REPLACE.value:
-            text = Text()
-            return text.text_replace
+        # elif command_name == Command.TEXT_REPLACE.value:
+        #     text = Text()
+        #     return text.text_replace
             
-        elif command_name == Command.UPDATE_TABLE_TEXT.value:
-            table = Table()
-            return table.update_table_text
+        # if command_name == Command.UPDATE_TABLE_TEXT.value:
+        #     print("update table text")
+        #     table = Table()update_table_text
+        #     return table.
           
-        elif command_name == Command.DRAW_TABLE.value:
+        if command_name == Command.DRAW_TABLE:
+            print("draw table")
             table = Table()
             return table.drow_tables
 
-        elif command_name == Command.REPLACE_TABLE.value:
-            table = Table()
-            return table.replace_tables
+        # elif command_name == Command.REPLACE_TABLE.value:
+        #     table = Table()
+        #     return table.replace_tables
 
-        elif command_name == Command.REMOVE_TABLE.value:
-            table = Table()
-            return table.remove_tables
+        # elif command_name == Command.REMOVE_TABLE.value:
+        #     table = Table()
+        #     return table.remove_tables
 
-        elif command_name == Command.IF_CONDITION.value:
-                expression = Expression()
-                return expression.if_condition 
+        # elif command_name == Command.IF_CONDITION.value:
+        #         expression = Expression()
+        #         return expression.if_condition 
 
-        elif command_name == Command.FOR_LOOP.value:
-                expression = Expression()
-                return expression.for_loop   
+        # elif command_name == Command.FOR_LOOP.value:
+        #         expression = Expression()
+        #         return expression.for_loop   
         else:
             raise Exception("Invalid command name")
 
@@ -92,9 +94,9 @@ class CommandExecutor:
             for shape in slide.shapes:
                 if shape.has_text_frame:
                     if shape.text:
-                        for cmd_values in commands:
+                        # for cmd_values in commands:
                             try:
-                                self.registry.get_command(commands_dic[cmd_values])(commands_dic, self.presentation, self.slide,
+                                self.registry.get_command(Command.DRAW_TABLE)(commands_dic, self.presentation, self.slide,
                                                                             shape, slides.index(self.slide), self.dataObj)
         
                             except Exception as e:
@@ -103,13 +105,13 @@ class CommandExecutor:
 
 def generate_pptx(event, context):
     s3_client = boto3.client('s3')
-    response = s3_client.get_object(Bucket=POC_PPTX_BUCKET, Key='demo.pptx')
+    response = s3_client.get_object(Bucket=POC_PPTX_BUCKET, Key='task.pptx')
     data = response['Body'].read()
 
-    f = open("/tmp/demo.pptx", "wb")
+    f = open("/tmp/task.pptx", "wb")
     f.write(data)
     f.close()
-    presentationObject = Presentation('/tmp/demo.pptx')
+    presentationObject = Presentation('/tmp/task.pptx')
     dataObj = {
         
         "schemeName": "XYZ Pension Scheme",
