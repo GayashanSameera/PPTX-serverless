@@ -1,7 +1,4 @@
 
 import {generatedTemplate} from './generateTemplate'
 
-export const generateTemplate={
-     ...generatedTemplate
-    
-    }
+export const generateTemplate={ generatedTemplate }

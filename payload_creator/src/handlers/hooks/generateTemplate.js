@@ -1,4 +1,4 @@
-export const generatedTemplate={
+ const generatedTemplate={
 
     FORMAL_PROPOSAL1 :(templateObj,fetchDataResult)=>{
       fetchDataResult = {
@@ -1456,3 +1456,4 @@ export const generatedTemplate={
     }
    
    }
+   export default generatedTemplate;
