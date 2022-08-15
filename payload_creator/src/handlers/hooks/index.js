@@ -1,4 +1,4 @@
 
-import generatedTemplate from './generateTemplate'
+import {FORMAL_PROPOSAL1} from './generateTemplate'
 
-export { generatedTemplate }
+export { FORMAL_PROPOSAL1 }

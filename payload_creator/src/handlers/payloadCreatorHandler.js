@@ -26,6 +26,7 @@ const payloadCreatorHandler={
       const fetchedData= await fetchDataResult.fetchData(event,payloadTemplate);
       console.log("fetchedData",fetchedData);
       
+      console.log("generatedTemplate",generatedTemplate);
       console.log("generatedTemplate[templateKey]",generatedTemplate[templateKey]);
       //hooks for update template using fetched data
       if(generatedTemplate[templateKey]){
