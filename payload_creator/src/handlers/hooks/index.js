@@ -1,4 +1,4 @@
 
 import generatedTemplate from './generateTemplate'
 
-export { generatedTemplate }
+export default generatedTemplate;
