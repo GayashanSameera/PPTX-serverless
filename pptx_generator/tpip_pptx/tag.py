@@ -8,23 +8,23 @@ class Tag:
         self.pattern = pattern
 
     def get_tag_content(self, pattern, shape):
-        print("pattern111",pattern)
-        print("shape.text",shape.text) 
+        # print("pattern111",pattern)
+        # print("shape.text",shape.text) 
         matches = re.findall(pattern, shape.text)
         # print("get_tag_content-matches",matches)
         return matches
 
     def replace_tags(self, replaced_for, replaced_text, shape):
-        print('replace_for',replaced_for)
-        print('replace_text',replaced_text)
+        # print('replace_for',replaced_for)
+        # print('replace_text',replaced_text)
         if shape.has_text_frame:
             text_frame = shape.text_frame
             for paragraph in text_frame.paragraphs:
                 for run in paragraph.runs:
                     cur_text = run.text
-                    print("cur_text",cur_text)
+                    # print("cur_text",cur_text)
                     new_text = cur_text.replace(replaced_for, replaced_text)
-                    print("new_text",new_text)
+                    # print("new_text",new_text)
                     run.text = new_text
                     
     def check_tag_exist(self,tag, shape):

@@ -19,9 +19,9 @@ class Table(Tag):
 
         def update_table_text(self,commands_dic,presentation, slide, shape, slide_index, dataObj):
             pattern = CommandRegex.UPDATE_TABLE_TEXT.value
-            # print("pattern_update_table_text",pattern)
+            print("pattern_update_table_text",pattern)
             matches = super().get_tag_content(pattern, shape)
-
+            
             if( not matches or len(matches) < 1):
                 return
 
@@ -30,11 +30,12 @@ class Table(Tag):
                 data = False
                 data_path = False
                 table_id = match
-
+                
                 if "DATA" in match:
                     data_path = match.split(" DATA ")[1]
                     table_id = match.split(" DATA ")[0]
-
+                print("data_path",data_path)
+                print("table_id",table_id)
                 if data_path and data_path in dataObj:
                     data = dataObj[data_path]
 
@@ -43,20 +44,28 @@ class Table(Tag):
 
                 table_id_tag = str(f"{CommandRegexSub.TB_ID.value} {table_id} +++")
                 print("table_id_tag",table_id_tag)
+                print("slide",slide)
+                print("slide_index",slide_index)
+                print("slide.shapes",slide.shapes)
                 for _shape in slide.shapes:
+                    print("===============shape start===========")
+                    print("_shape",_shape)
+                    print("_shape.has_table",_shape.has_table)
                     if _shape.has_table: 
                         for row in _shape.table.rows:
                             for cell in row.cells:
+                                print("cell.text",cell.text)
                                 if table_id_tag in cell.text:
                                     self.execute_table_tags(_shape, _shape.table, data, styles)
                                     new_text = cell.text.replace(str(f"{CommandRegexSub.TB_ID.value} {table_id} +++"), "")
                                     cell.text = new_text
                                     break
+                    print("===============shape end===========")
 
                 super().replace_tags(str(f"{CommandRegexSub.TB_TX_UP.value} {match} +++"), "", shape)
 
         def execute_table_tags(self,shape , table, data, styles):
-            print("xxxxxxxx")
+            # print("xxxxxxxx")
             row_index = 0
             for row in table.rows:
                 col_index = 0
@@ -356,18 +365,18 @@ class Table(Tag):
                     styles = data["styles"]
 
                 table_id_tag = str(f"{CommandRegexSub.TB_ID.value} {table_id} +++")
-                print("table_id",table_id_tag)
+                # print("table_id",table_id_tag)
                 for _shape in slide.shapes:
                     # print("aaaa")
                     if _shape.has_table: 
-                        print("bbbb",_shape.has_table)
+                        # print("bbbb",_shape.has_table)
                         for row in _shape.table.rows:
                             # print("cccc")
                             for cell in row.cells:
                                 # print("ddd")
-                                print("cell.text",cell.text)
+                                # print("cell.text",cell.text)
                                 if table_id_tag in cell.text:
-                                    print("eeeeeee")
+                                    # print("eeeeeee")
                                     self.execute_table_drower(_shape.table,data,styles)
                                     new_text = cell.text.replace(str(f"{CommandRegexSub.TB_ID.value} {table_id} +++"), "")
                                     cell.text = new_text
@@ -376,9 +385,9 @@ class Table(Tag):
                 super().replace_tags(str(f"{CommandRegexSub.TB_DRW.value} {match} +++"), "", shape)
         
         def execute_table_drower(self,table,data,styles):
-            print("yyyyyyyyyyyyy")
+            # print("yyyyyyyyyyyyy")
             row_data = pydash.get(data,"rows",default=5)
-            print("row_data",row_data)
+            # print("row_data",row_data)
             row_index = 1
             for row in row_data:
                 colum_index = 0
