@@ -19,7 +19,6 @@ class Table(Tag):
 
         def update_table_text(self,commands_dic,presentation, slide, shape, slide_index, dataObj):
             pattern = CommandRegex.UPDATE_TABLE_TEXT.value
-            # print("pattern_update_table_text",pattern)
             matches = super().get_tag_content(pattern, shape)
 
             if( not matches or len(matches) < 1):
@@ -42,7 +41,6 @@ class Table(Tag):
                     styles = data["styles"]
 
                 table_id_tag = str(f"{CommandRegexSub.TB_ID.value} {table_id} +++")
-                print("table_id_tag",table_id_tag)
                 for _shape in slide.shapes:
                     if _shape.has_table: 
                         for row in _shape.table.rows:
@@ -56,7 +54,6 @@ class Table(Tag):
                 super().replace_tags(str(f"{CommandRegexSub.TB_TX_UP.value} {match} +++"), "", shape)
 
         def execute_table_tags(self,shape , table, data, styles):
-            print("xxxxxxxx")
             row_index = 0
             for row in table.rows:
                 col_index = 0
@@ -66,13 +63,11 @@ class Table(Tag):
                     if( matches_for and len(matches_for) > 0):
                         for match in matches_for:
                             pattern_condition = CommandRegex.PATTERN_CONDITION.value
-                            # print("pattern_condition",pattern_condition)
                             matched_condition = super().get_tag_from_string(pattern_condition,match)
-                            # print("matched_condition",matched_condition)
 
                             pattern_content = CommandRegex.PATTERN_CONTENT.value
                             matched_content = super().get_tag_from_string(pattern_content,match)
-                            # print("matched_content",matched_content)
+                           
                             for contidion in matched_condition:
                                 object_value = pydash.get(data, contidion)
                                 text_result = ""
@@ -95,7 +90,7 @@ class Table(Tag):
 
                     pattern_text = CommandRegex.TEXT.value
                     matches_text_update = super().get_tag_from_string(pattern_text, cell.text)
-                    # print("matches_text_update",matches_text_update)
+                
                     if( matches_text_update and len(matches_text_update) > 0):
                         for match in matches_text_update:
                             new_text = cell.text.replace(str(f"{CommandRegexSub.INS.value} {match} +++"), pydash.get(data, match))
@@ -333,9 +328,8 @@ class Table(Tag):
                     
         def drow_tables(self,commands_dic,presentation, slide, shape, slide_index, dataObj):
             pattern = CommandRegex.TABLE_DRAW.value
-            # print("shape.text-at-begining",shape.text)
             matches = super().get_tag_content(pattern, shape)
-            # print("matches",matches)
+            
             if( not matches or len(matches) < 1):
                 return
 
@@ -356,18 +350,11 @@ class Table(Tag):
                     styles = data["styles"]
 
                 table_id_tag = str(f"{CommandRegexSub.TB_ID.value} {table_id} +++")
-                print("table_id",table_id_tag)
                 for _shape in slide.shapes:
-                    # print("aaaa")
                     if _shape.has_table: 
-                        print("bbbb",_shape.has_table)
                         for row in _shape.table.rows:
-                            # print("cccc")
                             for cell in row.cells:
-                                # print("ddd")
-                                print("cell.text",cell.text)
                                 if table_id_tag in cell.text:
-                                    print("eeeeeee")
                                     self.execute_table_drower(_shape.table,data,styles)
                                     new_text = cell.text.replace(str(f"{CommandRegexSub.TB_ID.value} {table_id} +++"), "")
                                     cell.text = new_text
@@ -376,24 +363,20 @@ class Table(Tag):
                 super().replace_tags(str(f"{CommandRegexSub.TB_DRW.value} {match} +++"), "", shape)
         
         def execute_table_drower(self,table,data,styles):
-            print("yyyyyyyyyyyyy")
             row_data = pydash.get(data,"rows",default=[])
-            print("row_data",row_data)
             row_index = 1
             for row in row_data:
-                print("row",row)
                 colum_index = 0
                 if row_index > 1:
                     self.add_new_row_to_existing_table(table)
                 for column in row:
                     cell = table.cell(row_index, colum_index)
-                    print("column",column)
                     cell.text = column
                     
-                    # try:
-                    #     # self.table_styles(cell,row_index,colum_index,styles)
-                    # except ValueError:
-                    #     print("error")
+                    try:
+                        self.table_styles(cell,row_index,colum_index,styles)
+                    except ValueError:
+                        print("error")
 
                     colum_index += 1
                 row_index += 1
