@@ -102,13 +102,13 @@ class CommandExecutor:
 
 def generate_pptx(event, context):
     s3_client = boto3.client('s3')
-    response = s3_client.get_object(Bucket=POC_PPTX_BUCKET, Key='task.pptx')
+    response = s3_client.get_object(Bucket=POC_PPTX_BUCKET, Key='demo1.pptx')
     data = response['Body'].read()
 
-    f = open("/tmp/task.pptx", "wb")
+    f = open("/tmp/demo1.pptx", "wb")   
     f.write(data)
     f.close()
-    presentationObject = Presentation('/tmp/task.pptx')
+    presentationObject = Presentation('/tmp/demo1.pptx')
     dataObj = {
         
         "schemeName": "XYZ Pension Scheme",
@@ -274,7 +274,7 @@ def generate_pptx(event, context):
             }
         },
         "position": "SSE",
-        "city1": "NW",
+        "city": "NW",
         "image_title": "This is a sample image",
         "sample_image": { "url" : "Sample-image.png" , "size": {"left":1,"top":1, "height":3, "width":8}},
         "project_description": "React , Node , AWS serverless",

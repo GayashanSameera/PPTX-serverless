@@ -377,21 +377,23 @@ class Table(Tag):
         
         def execute_table_drower(self,table,data,styles):
             print("yyyyyyyyyyyyy")
-            row_data = pydash.get(data,"rows",default=5)
+            row_data = pydash.get(data,"rows",default=[])
             print("row_data",row_data)
             row_index = 1
             for row in row_data:
+                print("row",row)
                 colum_index = 0
                 if row_index > 1:
                     self.add_new_row_to_existing_table(table)
                 for column in row:
                     cell = table.cell(row_index, colum_index)
+                    print("column",column)
                     cell.text = column
                     
-                    try:
-                        self.table_styles(cell,row_index,colum_index,styles)
-                    except ValueError:
-                        print("error")
+                    # try:
+                    #     # self.table_styles(cell,row_index,colum_index,styles)
+                    # except ValueError:
+                    #     print("error")
 
                     colum_index += 1
                 row_index += 1
