@@ -44,12 +44,10 @@ class CommandRegistry:
             return text.text_replace
             
         elif command_name == Command.UPDATE_TABLE_TEXT.value:
-            print("update table text")
             table = Table()
             return table.update_table_text
           
         elif command_name == Command.DRAW_TABLE.value:
-            print("draw table")
             table = Table()
             return table.drow_tables
 
@@ -68,7 +66,6 @@ class CommandRegistry:
         elif command_name == Command.FOR_LOOP.value:
                 expression = Expression()
                 return expression.for_loop   
-    
         else:
             raise Exception("Invalid command name")
 
@@ -79,7 +76,6 @@ class CommandExecutor:
     registry = CommandRegistry()
 
     def __init__(self, presentation, dataObj):
-        self.slide = None
         self.presentation = presentation
         self.dataObj = dataObj
 
@@ -92,15 +88,13 @@ class CommandExecutor:
         # find commands in the presentation using 'commands' list & execute
         slides = [self.slide for self.slide in self.presentation.slides]
         for slide in slides:
-            # print("slide...",slide)
             for shape in slide.shapes:
-                # print("shae....",shape)
                 if shape.has_text_frame:
                     for cmd in commands:
                         if cmd in shape.text:
                             try:
-                                self.registry.get_command(commands_dic[cmd])(commands_dic, self.presentation, self.slide,
-                                                                            shape, slides.index(self.slide), self.dataObj)
+                                self.registry.get_command(commands_dic[cmd])(commands_dic, self.presentation, slide,
+                                                                            shape, slides.index(slide), self.dataObj)
         
                             except Exception as e:
                                 print(e)
