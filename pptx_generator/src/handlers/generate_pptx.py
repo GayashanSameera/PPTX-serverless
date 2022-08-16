@@ -35,39 +35,40 @@ class CommandRegistry:
         return self.commands.keys()
 
     def get_command(self, command_name):
-        # if command_name == Command.REPLACE_IMAGE.value:
-        #     image = Image()
-        #     return image.replace_images
+        if command_name == Command.REPLACE_IMAGE.value:
+            image = Image()
+            return image.replace_images
          
-        # elif command_name == Command.TEXT_REPLACE.value:
-        #     text = Text()
-        #     return text.text_replace
+        elif command_name == Command.TEXT_REPLACE.value:
+            text = Text()
+            return text.text_replace
             
-        # if command_name == Command.UPDATE_TABLE_TEXT.value:
-        #     print("update table text")
-        #     table = Table()update_table_text
-        #     return table.
+        elif command_name == Command.UPDATE_TABLE_TEXT.value:
+            print("update table text")
+            table = Table()
+            return table.update_table_text
           
-        if command_name == Command.DRAW_TABLE:
+        elif command_name == Command.DRAW_TABLE.value:
             print("draw table")
             table = Table()
             return table.drow_tables
 
-        # elif command_name == Command.REPLACE_TABLE.value:
-        #     table = Table()
-        #     return table.replace_tables
+        elif command_name == Command.REPLACE_TABLE.value:
+            table = Table()
+            return table.replace_tables
 
-        # elif command_name == Command.REMOVE_TABLE.value:
-        #     table = Table()
-        #     return table.remove_tables
+        elif command_name == Command.REMOVE_TABLE.value:
+            table = Table()
+            return table.remove_tables
 
-        # elif command_name == Command.IF_CONDITION.value:
-        #         expression = Expression()
-        #         return expression.if_condition 
+        elif command_name == Command.IF_CONDITION.value:
+                expression = Expression()
+                return expression.if_condition 
 
-        # elif command_name == Command.FOR_LOOP.value:
-        #         expression = Expression()
-        #         return expression.for_loop   
+        elif command_name == Command.FOR_LOOP.value:
+                expression = Expression()
+                return expression.for_loop   
+    
         else:
             raise Exception("Invalid command name")
 
@@ -91,13 +92,16 @@ class CommandExecutor:
         # find commands in the presentation using 'commands' list & execute
         slides = [self.slide for self.slide in self.presentation.slides]
         for slide in slides:
+            # print("slide...",slide)
             for shape in slide.shapes:
+                # print("shae....",shape)
                 if shape.has_text_frame:
-                    if shape.text:
-                        for cmd_values in commands:
+                    for cmd in commands:
+                        if cmd in shape.text:
                             try:
-                                self.registry.get_command(commands_dic[cmd_values])(commands_dic, self.presentation, self.slide,
+                                self.registry.get_command(commands_dic[cmd])(commands_dic, self.presentation, self.slide,
                                                                             shape, slides.index(self.slide), self.dataObj)
+        
                             except Exception as e:
                                 print(e)
 
