@@ -1,4 +1,4 @@
-import FORMAL_PROPOSAL1 from './formalProposal1'
+import FORMAL_PROPOSAL1 from './FORMAL_PROPOSAL1'
 
 
 export{

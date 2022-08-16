@@ -1,34 +1,77 @@
-import responseHelper from "../helpers"
-import payloadTemplates from "./payloadTemplates"
+import {responseHelper,fetchDataResult} from "../helpers"
+import * as payloadTemplates from "./payloadTemplates"
+//import {fetchDataResult} from "../helpers/fetchData";
+//import FORMAL_PROPOSAL1 from "./payloadTemplates/formalProposal1";
+import  * as generatedTemplate  from "./hooks";
+import { generateKey } from "crypto";
 
 
 const payloadCreatorHandler={
-  generatePPTX: () => {
-    //createPayload
-    //get responce from createPayload
-    //call to python service using  createPayload responce 
-  },
+  
 
-   createPayload:(event)=>{
+   createPayload:async (event)=>{
+    let updatedTemplate={};
      
     
     try{
       const {schemeId,scheme,templateKey,outPutFileName,destBucketName,destPath} = event.body;
-      const payloadTemplate=await payloadTemplates[templateKey](event)
-
-      //read selected template
-
+       //read selected template
+       
+       console.log("event",templateKey)
+      const payloadTemplate= payloadTemplates[templateKey]
+      
+      console.log("payloadTemplate",payloadTemplate);
+     
       // fetch data using template keys
-
-      //hooks for update template using fetced data
-
-      return responseHelper.successResponse(event,'Successfully Fetched Template',payloadTemplate,true)
+      const fetchedData= await fetchDataResult.fetchData(event,payloadTemplate);
+      console.log("fetchedData",fetchedData);
+      
+      console.log("generatedTemplate",generatedTemplate);
+      console.log("generatedTemplate[templateKey]",generatedTemplate[templateKey]);
+      //hooks for update template using fetched data
+      if(generatedTemplate[templateKey]){
+        
+       return updatedTemplate= await generatedTemplate[templateKey](payloadTemplate,fetchedData)
+       
+      }
+      console.log("updatedTemplate",updatedTemplate);
+      // return responseHelper.successResponse(event,'Successfully Fetched Template',updatedTemplate,true)
       
 
-    }catch{
+    }catch(error){
+      console.log("dsdfsdfsd",error);
+      
       return responseHelper.errorResponse(event,500,"create payload Failed")
 
     }
-   } 
+   },
+
+
+   generatePPTX: async (event) => {
+    
+  
+    
+    //createPayload
+    //get responce from createPayload
+    try {
+      const template =await payloadCreatorHandler.createPayload(event);
+      console.log('sdasdasdasdasdasdsa',template);
+      return responseHelper.successResponse(event,'Successfully Fetched Template',template,true)
+
+    } catch (error) {
+      console.log("PaAYLOAD CREATOR ERROR",error)
+      return responseHelper.errorResponse(event,500,"create payload Failed")
+    }
+
+  
+    
+    //call to python service using  createPayload responce 
+
+
+  }
+
+
 }
+
+
 export default payloadCreatorHandler;
