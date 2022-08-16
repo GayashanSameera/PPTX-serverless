@@ -25,7 +25,7 @@ class Expression(Tag):
                 object_value = super().eval_executor(contidion, dataObj)
 
                 #replace text
-                text_replace_pattern = r'\+\+\+INS (.*?) \+\+\+'
+                text_replace_pattern = CommandRegex.TEXT.value
                 text_matches = super().get_tag_from_string(text_replace_pattern, matched_content[0])
                 if( text_matches and len(text_matches) > 0):
                     text_replace = ""

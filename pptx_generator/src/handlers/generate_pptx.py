@@ -11,6 +11,7 @@ from tpip_pptx.image import Image
 from tpip_pptx.table import Table
 from tpip_pptx.text import Text
 from tpip_pptx.expression import Expression
+from tpip_pptx.util import Util
 
 
 POC_PPTX_BUCKET = os.environ.get("POC_PPTX_BUCKET")
@@ -62,8 +63,8 @@ class CommandRegistry:
             return table.remove_tables
 
         elif command_name == Command.IF_CONDITION.value:
-                expression = Expression()
-                return expression.if_condition 
+            expression = Expression()
+            return expression.if_condition 
 
         elif command_name == Command.FOR_LOOP.value:
                 expression = Expression()
@@ -940,6 +941,9 @@ def generate_pptx(event, context):
     }
     executor = CommandExecutor(presentationObject, dataObj)
     executor.execute()
+
+    util = Util()
+    util.drow_toc(presentationObject, dataObj)
 
     try:
         with BytesIO() as fileobj:
