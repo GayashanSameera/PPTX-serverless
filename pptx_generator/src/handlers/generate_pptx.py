@@ -102,13 +102,13 @@ class CommandExecutor:
 
 def generate_pptx(event, context):
     s3_client = boto3.client('s3')
-    response = s3_client.get_object(Bucket=POC_PPTX_BUCKET, Key='demo.pptx')
+    response = s3_client.get_object(Bucket=POC_PPTX_BUCKET, Key='task.pptx')
     data = response['Body'].read()
 
-    f = open("/tmp/demo.pptx", "wb")
+    f = open("/tmp/task.pptx", "wb")
     f.write(data)
     f.close()
-    presentationObject = Presentation('/tmp/demo.pptx')
+    presentationObject = Presentation('/tmp/task.pptx')
     dataObj = {
         
         "schemeName": "XYZ Pension Scheme",

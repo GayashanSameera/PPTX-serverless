@@ -12,6 +12,8 @@ class Text(Tag):
     def text_replace(self,commands_dic,presentation,slide,shape,slides,dataObj):
         pattern = CommandRegex.TEXT.value
         match, object_value = super().get_object_values(pattern, shape, dataObj)
+        # print("match",match)
+        # print("object_value",object_value)
         if type(object_value) == dict:
             super().replace_tags(str(f"{CommandRegexSub.INS.value} {match} +++"), str(object_value.get('text')), shape)
         else:
