@@ -94,11 +94,10 @@ class CommandExecutor:
             for shape in slide.shapes:
                 if shape.has_text_frame:
                     if shape.text:
-                        # for cmd_values in commands:
+                        for cmd_values in commands:
                             try:
-                                self.registry.get_command(Command.DRAW_TABLE)(commands_dic, self.presentation, self.slide,
+                                self.registry.get_command(commands_dic[cmd_values])(commands_dic, self.presentation, self.slide,
                                                                             shape, slides.index(self.slide), self.dataObj)
-        
                             except Exception as e:
                                 print(e)
 
