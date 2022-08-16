@@ -11,7 +11,6 @@ from tpip_pptx.image import Image
 from tpip_pptx.table import Table
 from tpip_pptx.text import Text
 from tpip_pptx.expression import Expression
-from tpip_pptx.util import Util
 
 
 POC_PPTX_BUCKET = os.environ.get("POC_PPTX_BUCKET")
@@ -45,12 +44,10 @@ class CommandRegistry:
             return text.text_replace
             
         elif command_name == Command.UPDATE_TABLE_TEXT.value:
-            print("update table text")
             table = Table()
             return table.update_table_text
           
         elif command_name == Command.DRAW_TABLE.value:
-            print("draw table")
             table = Table()
             return table.drow_tables
 
@@ -69,7 +66,6 @@ class CommandRegistry:
         elif command_name == Command.FOR_LOOP.value:
                 expression = Expression()
                 return expression.for_loop   
-    
         else:
             raise Exception("Invalid command name")
 
@@ -78,9 +74,9 @@ class CommandRegistry:
 
 class CommandExecutor:
     registry = CommandRegistry()
+    slideObj = Slide()
 
     def __init__(self, presentation, dataObj):
-        self.slide = None
         self.presentation = presentation
         self.dataObj = dataObj
 
@@ -93,29 +89,29 @@ class CommandExecutor:
         # find commands in the presentation using 'commands' list & execute
         slides = [self.slide for self.slide in self.presentation.slides]
         for slide in slides:
-            # print("slide...",slide)
             for shape in slide.shapes:
-                # print("shae....",shape)
                 if shape.has_text_frame:
                     for cmd in commands:
                         if cmd in shape.text:
                             try:
-                                self.registry.get_command(commands_dic[cmd])(commands_dic, self.presentation, self.slide,
-                                                                            shape, slides.index(self.slide), self.dataObj)
+                                self.registry.get_command(commands_dic[cmd])(commands_dic, self.presentation, slide,
+                                                                            shape, slides.index(slide), self.dataObj)
         
                             except Exception as e:
                                 print(e)
+                                
+        self.slideObj.remove_extra_slides(self.presentation)
 
 
 def generate_pptx(event, context):
     s3_client = boto3.client('s3')
-    response = s3_client.get_object(Bucket=POC_PPTX_BUCKET, Key='task.pptx')
+    response = s3_client.get_object(Bucket=POC_PPTX_BUCKET, Key='demo1.pptx')
     data = response['Body'].read()
 
-    f = open("/tmp/task.pptx", "wb")
+    f = open("/tmp/demo1.pptx", "wb")   
     f.write(data)
     f.close()
-    presentationObject = Presentation('/tmp/task.pptx')
+    presentationObject = Presentation('/tmp/demo1.pptx')
     dataObj = {
         
         "schemeName": "XYZ Pension Scheme",
@@ -281,7 +277,7 @@ def generate_pptx(event, context):
             }
         },
         "position": "SSE",
-        "city1": "NW",
+        "city": "NW",
         "image_title": "This is a sample image",
         "sample_image": { "url" : "Sample-image.png" , "size": {"left":1,"top":1, "height":3, "width":8}},
         "project_description": "React , Node , AWS serverless",
