@@ -395,7 +395,6 @@ class Table(Tag):
             tr = row._tr
             tbl.remove(tr)
 
-    #remove tables
         def remove_tables(self,slide,content):
             table_remove_pattern = CommandRegex.TABLE_REMOVE.value
             table_remove_matches = super().get_tag_from_string(table_remove_pattern, content)
