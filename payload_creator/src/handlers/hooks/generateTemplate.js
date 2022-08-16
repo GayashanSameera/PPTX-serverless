@@ -1453,7 +1453,6 @@ const generatedTemplate = {
     generate :async(templateKey,templateObj,fetchDataResult)=>{
     
      const responseTemple = allTemples[templateKey](templateObj,fetchDataResult);
-     console.log('responseTemple ',responseTemple);
      return responseTemple;
     }
    
