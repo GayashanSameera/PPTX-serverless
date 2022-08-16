@@ -11,6 +11,8 @@ from tpip_pptx.image import Image
 from tpip_pptx.table import Table
 from tpip_pptx.text import Text
 from tpip_pptx.expression import Expression
+from tpip_pptx.toc import Toc
+from tpip_pptx.slide import Slide
 
 
 POC_PPTX_BUCKET = os.environ.get("POC_PPTX_BUCKET")
@@ -99,7 +101,7 @@ class CommandExecutor:
         
                             except Exception as e:
                                 print(e)
-                                
+
         self.slideObj.remove_extra_slides(self.presentation)
 
 
@@ -276,6 +278,18 @@ def generate_pptx(event, context):
                 ]
             }
         },
+
+        "toc":[
+            {
+                "id": "im1",
+                "text": "This is a sample image",
+                "sub":[{
+                    "id": "im2",
+                    "text": "sample image"
+                    }]
+                
+            }
+        ],
         "position": "SSE",
         "city": "NW",
         "image_title": "This is a sample image",
@@ -938,8 +952,8 @@ def generate_pptx(event, context):
     executor = CommandExecutor(presentationObject, dataObj)
     executor.execute()
 
-    util = Util()
-    util.drow_toc(presentationObject, dataObj)
+    toc = Toc()
+    toc.drow_toc(presentationObject, dataObj)
 
     try:
         with BytesIO() as fileobj:

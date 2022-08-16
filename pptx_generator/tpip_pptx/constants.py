@@ -13,6 +13,8 @@ class CommandRegex(enum.Enum):
     TABLE_REMOVE = r'\+\+\+TABLE_REMOVE (.*?) \+\+\+'
     TABLE_ROW_REMOVE = r'\+\+\+TABLE_ROW_REMOVE (.*?) \+\+\+'
     TABLE_COLUMN_REMOVE = r'\+\+\+TABLE_COLUMN_REMOVE (.*?) \+\+\+'
+    TOC = r'\+\+\+TOC (.*?) \+\+\+'
+    TOC_IDS = r'\+\+\+TOC_IDS (.*?) \+\+\+'
 
 class CommandRegexSub(enum.Enum):
     IMG = '+++IM'
@@ -26,7 +28,8 @@ class CommandRegexSub(enum.Enum):
     IF = '+++IF'
     IF_END = 'IF-END+++'
     RW_ID ='+++RW_ID'
-    
+    TOC = '+++TOC'
+    TOC_IDS = '+++TOC_IDS'
 
 
 class Command(enum.Enum):
