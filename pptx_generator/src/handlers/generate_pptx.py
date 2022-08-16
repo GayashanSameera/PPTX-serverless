@@ -76,7 +76,6 @@ class CommandExecutor:
     registry = CommandRegistry()
 
     def __init__(self, presentation, dataObj):
-        self.slide = None
         self.presentation = presentation
         self.dataObj = dataObj
 
@@ -94,8 +93,9 @@ class CommandExecutor:
                     for cmd in commands:
                         if cmd in shape.text:
                             try:
-                                self.registry.get_command(commands_dic[cmd])(commands_dic, self.presentation, self.slide,
-                                                                            shape, slides.index(self.slide), self.dataObj)
+                                self.registry.get_command(commands_dic[cmd])(commands_dic, self.presentation, slide,
+                                                                            shape, slides.index(slide), self.dataObj)
+        
                             except Exception as e:
                                 print(e)
 
