@@ -1,10 +1,11 @@
 from tpip_pptx.tag import Tag
 from tpip_pptx.constants import CommandRegexSub, CommandRegex
 from tpip_pptx.table import Table
+import pydash
 
 class Expression(Tag):
-    def __init__(self,pattern):
-            super().__init__(pattern)
+    def __init__(self):
+        pass
 
     def if_condition(self, commands_dic, presentation, slide, shape, slides_index, dataObj):
         pattern = CommandRegex.PATTERN_IF.value
@@ -14,17 +15,17 @@ class Expression(Tag):
             return
 
         for match in matches:
-            pattern_condition = CommandRegex.PATTERN_CONDITION.value[0]
+            pattern_condition = CommandRegex.PATTERN_CONDITION.value
             matched_condition = super().get_tag_from_string(pattern_condition,match)
 
-            pattern_content = CommandRegex.PATTERN_CONTENT.value[0]
+            pattern_content = CommandRegex.PATTERN_CONTENT.value
             matched_content = super().get_tag_from_string(pattern_content,match)
             
             for contidion in matched_condition:
                 object_value = super().eval_executor(contidion, dataObj)
 
                 #replace text
-                text_replace_pattern = r'\+\+\+INS (.*?) \+\+\+'
+                text_replace_pattern = CommandRegex.TEXT.value
                 text_matches = super().get_tag_from_string(text_replace_pattern, matched_content[0])
                 if( text_matches and len(text_matches) > 0):
                     text_replace = ""
@@ -62,5 +63,29 @@ class Expression(Tag):
                         table.remove_table_column(slide,matched_content[0])
                         super().replace_tags(str(f"{CommandRegexSub.IF.value} {match}{CommandRegexSub.IF_END.value}"), "", shape)
 
-    
+    def for_loop(self, commands_dic, presentation, slide, shape, slides_index, dataObj):
+        pattern = CommandRegex.PATTERN_FOR.value
+        matches = super().get_tag_content(pattern, shape)
+        
+        if( not matches or len(matches) < 1):
+            return
+
+        for match in matches:
+            pattern_condition = CommandRegex.PATTERN_CONDITION.value
+            matched_condition = super().get_tag_from_string(pattern_condition,match)
+
+            pattern_content = CommandRegex.PATTERN_CONTENT.value
+            matched_content = super().get_tag_from_string(pattern_content,match)
+            
+            for contidion in matched_condition:
+                object_value = pydash.get(dataObj, contidion)
+                text_result = ""
+                if(object_value):
+                    for data in object_value:
+                        updated_data = super().text_tag_update(matched_content[0],data)
+                        if(updated_data and updated_data["text"]):
+                            text_result += updated_data["text"] + "\n"
+
+            # this is not working if you use tabspaces, but you can use spaces
+            super().replace_tags(str(f"{CommandRegexSub.FOR.value} {match} {CommandRegexSub.FOR_END.value}"), text_result, shape)
  

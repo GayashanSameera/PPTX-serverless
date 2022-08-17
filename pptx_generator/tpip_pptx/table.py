@@ -53,7 +53,7 @@ class Table(Tag):
 
                 super().replace_tags(str(f"{CommandRegexSub.TB_TX_UP.value} {match} +++"), "", shape)
 
-        def execute_table_tags(self,shape , table, dataObj, styles):
+        def execute_table_tags(self,shape , table, data, styles):
             row_index = 0
             for row in table.rows:
                 col_index = 0
@@ -67,8 +67,9 @@ class Table(Tag):
 
                             pattern_content = CommandRegex.PATTERN_CONTENT.value
                             matched_content = super().get_tag_from_string(pattern_content,match)
+                           
                             for contidion in matched_condition:
-                                object_value = pydash.get(dataObj, contidion)
+                                object_value = pydash.get(data, contidion)
                                 text_result = ""
                                 if(object_value):
                                     data_count = 1
@@ -89,9 +90,10 @@ class Table(Tag):
 
                     pattern_text = CommandRegex.TEXT.value
                     matches_text_update = super().get_tag_from_string(pattern_text, cell.text)
+                
                     if( matches_text_update and len(matches_text_update) > 0):
                         for match in matches_text_update:
-                            new_text = cell.text.replace(str(f"{CommandRegexSub.INS.value} {match} +++"), pydash.get(dataObj, match))
+                            new_text = cell.text.replace(str(f"{CommandRegexSub.INS.value} {match} +++"), pydash.get(data, match))
                             cell.text = new_text
                             try:
                                 self.table_styles(cell,row_index,col_index,styles)
@@ -183,7 +185,7 @@ class Table(Tag):
         
         def replace_tables(self,pattern,presentation,slide,shape,slide_index,dataObj):
             pattern = CommandRegex.CREATE_TABLE.value
-            match , object_value = super().get_object_values(pattern,shape,dataObj)
+            match , object_value = super().get_object_values(pattern, shape, dataObj)
             if(object_value):
                 super().replace_tags(str(f"{CommandRegexSub.TB_ADD.value} {match} +++"), "", shape)
                 self.create_table(presentation, slide, shape, slide_index, object_value)
@@ -327,6 +329,7 @@ class Table(Tag):
         def drow_tables(self,commands_dic,presentation, slide, shape, slide_index, dataObj):
             pattern = CommandRegex.TABLE_DRAW.value
             matches = super().get_tag_content(pattern, shape)
+            
             if( not matches or len(matches) < 1):
                 return
 
@@ -336,31 +339,31 @@ class Table(Tag):
                 data_path = False
                 table_id = match
 
-            if "DATA" in match:
-                data_path = match.split(" DATA ")[1]
-                table_id = match.split(" DATA ")[0]
+                if "DATA" in match:
+                    data_path = match.split(" DATA ")[1]
+                    table_id = match.split(" DATA ")[0]
 
-            if data_path and data_path in dataObj:
-                data = dataObj[data_path]
+                if data_path and data_path in dataObj:
+                    data = dataObj[data_path]
 
-            if data and "styles" in data:
-                styles = data["styles"]
+                if data and "styles" in data:
+                    styles = data["styles"]
 
-            table_id_tag = str(f"{CommandRegexSub.TB_ID.value} {table_id} +++")
-            for _shape in slide.shapes:
-                if _shape.has_table: 
-                    for row in _shape.table.rows:
-                        for cell in row.cells:
-                            if table_id_tag in cell.text:
-                                self.execute_table_drower(_shape.table, data, styles)
-                                new_text = cell.text.replace(str(f"{CommandRegexSub.TB_ID.value} {table_id} +++"), "")
-                                cell.text = new_text
-                                break
+                table_id_tag = str(f"{CommandRegexSub.TB_ID.value} {table_id} +++")
+                for _shape in slide.shapes:
+                    if _shape.has_table: 
+                        for row in _shape.table.rows:
+                            for cell in row.cells:
+                                if table_id_tag in cell.text:
+                                    self.execute_table_drower(_shape.table,data,styles)
+                                    new_text = cell.text.replace(str(f"{CommandRegexSub.TB_ID.value} {table_id} +++"), "")
+                                    cell.text = new_text
+                                    break
 
-            super().replace_tags(str(f"{CommandRegexSub.TB_DRW.value} {match} +++"), "", shape)
+                super().replace_tags(str(f"{CommandRegexSub.TB_DRW.value} {match} +++"), "", shape)
         
         def execute_table_drower(self,table,data,styles):
-            row_data = pydash.get(data,"rows",default=5)
+            row_data = pydash.get(data,"rows",default=[])
             row_index = 1
             for row in row_data:
                 colum_index = 0
@@ -392,7 +395,6 @@ class Table(Tag):
             tr = row._tr
             tbl.remove(tr)
 
-    #remove tables
         def remove_tables(self,slide,content):
             table_remove_pattern = CommandRegex.TABLE_REMOVE.value
             table_remove_matches = super().get_tag_from_string(table_remove_pattern, content)

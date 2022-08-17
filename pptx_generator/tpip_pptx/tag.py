@@ -1,13 +1,13 @@
 import re
 import pydash
 
-from tpip_pptx.constants import CommandRegexSub
+from tpip_pptx.constants import CommandRegexSub, CommandRegex
 
 class Tag:
-    def __init__(self, pattern):
-        self.pattern = pattern
+    def __init__(self):
+        pass
 
-    def get_tag_content(self, pattern, shape): 
+    def get_tag_content(self, pattern, shape):
         matches = re.findall(pattern, shape.text)
         return matches
 
@@ -24,7 +24,7 @@ class Tag:
         matches = tag in shape.text
         return matches
 
-    def get_object_values(self,pattern,shape,dataObj):
+    def get_object_values(self, pattern, shape,dataObj):
         matches = self.get_tag_content(pattern, shape)
         if (not matches or len(matches) < 1):
             return
@@ -36,10 +36,16 @@ class Tag:
         matches = re.findall(pattern, string)
         return matches
 
-    def get_object_values_string(self, pattern, text,dataObj):
+   
+    def eval_executor(self,logic,dataObj):
+        return eval(logic,dataObj)
+        
+    def text_tag_update(self,text, dataObj):
+        current_text = text
+        pattern = CommandRegex.TEXT.value
         matches = self.get_tag_from_string(pattern, text)
-        if (not matches or len(matches) < 1):
-            return {"text": text}
+        if( not matches or len(matches) < 1):
+            return { "text": text }
 
         for match in matches:
             object_value = pydash.get(dataObj, match, False)
@@ -48,13 +54,5 @@ class Tag:
 
         return {"text": current_text}
 
-    def eval_executor(self,logic,dataObj):
-        return eval(logic,dataObj)
-        
-    def text_tag_update(self,pattern, text,dataObj):
-        match , object_value = self.get_object_values_string(pattern, text,dataObj)
-        if (object_value != False):
-                current_text = current_text.replace(str(f"{CommandRegexSub.INS.value} {match} +++"), str(object_value))
-
-        return {"text": current_text}
-        
+    
+   
