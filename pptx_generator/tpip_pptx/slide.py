@@ -30,7 +30,8 @@ class Slide():
         if(len(slide_indexs_to_delete) > 0):
             array_index = 0
             for s_index in slide_indexs_to_delete:
-                slide_index = slides.index(slide)
+                slide_index = s_index
                 self.delete_slides(presentation, slide_index - array_index)
-                array_index += 1    
-    
+                array_index += 1 
+                    
+        return presentation
