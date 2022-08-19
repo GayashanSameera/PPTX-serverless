@@ -33,8 +33,14 @@ provider:
   warningThreshold: 100
 
 functions:
-  createPayload:
-    handler: route.createPayload
+  generatePPTX:
+    handler: route.generatePPTX
+    timeout: 900
+    events:
+      - http:
+          path: /tpip/generate-pptx
+          method: post
+          cors: true
 
 resources:
   Resources:
