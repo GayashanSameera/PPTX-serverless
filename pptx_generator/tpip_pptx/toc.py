@@ -42,16 +42,15 @@ class Toc(Tag):
             cell_2.text = str(ids[row_id])
 
             row_index += 1
-            sub = pydash.get(row, "sub")
-            if sub != None:
-                sub_p = sub[0]
-                sub_id = sub_p["id"]
-                if sub_p or len(sub_p) > 0:
-                    self.add_new_row_to_existing_table(table)
-                    cell_1 = table.cell(row_index, 0)
-                    cell_1.text = "     "+sub_p["text"]
-                    cell_2 = table.cell(row_index, 2)
-                    cell_2.text = str(ids[sub_id])
+            sub = pydash.get(row, "sub", default=[])
+            if sub:
+                sub_list = sub[0]
+                sub_id = sub_list["id"]
+                self.add_new_row_to_existing_table(table)
+                cell_1 = table.cell(row_index, 0)
+                cell_1.text = "     "+sub_list["text"]
+                cell_2 = table.cell(row_index, 2)
+                cell_2.text = str(ids[sub_id])
  
             row_index += 1
 
