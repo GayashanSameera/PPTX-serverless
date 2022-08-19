@@ -16,6 +16,7 @@ provider:
     minimumCompressionSize: 1024
   environment:
     POC_PPTX_BUCKET: ${file(../env.yml):${opt:stage}.pocPptxBucket}
+    STAGE: ${self:provider.stage, 'dev'}
   iam:
     role:
       statements:

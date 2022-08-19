@@ -15,12 +15,14 @@ const lambdaHelper={
         payload={..._event,...payload,permission:B2B_AUTH};
         const params={FunctionName:`${ms}-${STAGE}-${fn}`,InvocationType: 'RequestResponse',
         LogType: 'Tail',};
+        
 
         if(!_.isEmpty(payload)){
-            params.payload=JSON.stringify(payload);
+            params.Payload=JSON.stringify(payload);
         }
-
+        console.log('PARAM',params);
         const{Payload} =await lambda.invoke(params).promise();
+        console.log("payload",Payload);
         const {statusCode=null,body=null}=JSON.parse(Payload);
         if(!statusCode){
             throw Error('Something Went Wrong While invoking Lambda Request-Response')
