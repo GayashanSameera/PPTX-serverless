@@ -142,7 +142,7 @@ def generate_pptx(event, context):
         #         "rw_3": {
         #             "font_size": 9,
         #             "font_name": "Arial",
-        #             "font_color": (0, 118, 214),
+        #             "font_color": [0, 118, 214],
         #             "alignment": "center",
         #         }
         #     },
@@ -159,28 +159,28 @@ def generate_pptx(event, context):
         # "ACperformance":{
         #     "styles" : {
         #         "rw_1": {
-        #             "font_color": (252, 250, 250),
+        #             "font_color": [252, 250, 250],
         #             "bold": True,
-        #             "background_color": (14, 99, 179)
+        #             "background_color": [14, 99, 179]
         #         },
         #         "rw_2": {
         #             "bold": True,
-        #             "background_color": (46, 197, 217)
+        #             "background_color": [46, 197, 217]
         #         },
         #         "rw_8": {
         #             "bold": True,
-        #             "background_color": (46, 197, 217)
+        #             "background_color": [46, 197, 217]
         #         },
         #         "rw_10": {
-        #             "font_color": (252, 250, 250),
+        #             "font_color": [252, 250, 250],
         #             "bold": True,
-        #             "background_color": (14, 99, 179)
+        #             "background_color": [14, 99, 179]
         #         },
         #         "all": {
         #             "font_size": 9,
         #             "font_name": "Arial",
         #             "alignment": "center",
-        #             "background_color": (252, 250, 250)
+        #             "background_color": [252, 250, 250]
         #         },
         #     },
         #     "rows": [
@@ -209,19 +209,19 @@ def generate_pptx(event, context):
         #         },
         #         "rw_1": {
         #             "column_indexes": [0, 1],
-        #             "font_color": (6, 123, 191),
+        #             "font_color": [6, 123, 191],
         #         },
         #         "rw_2": {
         #             "column_indexes": [0,1],
-        #             "font_color": (209, 189, 13),
+        #             "font_color": [209, 189, 13],
         #         },
         #         "rw_3": {
         #             "column_indexes": [0,1],
-        #             "font_color": (5, 125, 51),
+        #             "font_color": [5, 125, 51],
         #         },
         #         "rw_4": {
         #             "column_indexes": [0,1],
-        #             "font_color": (176, 19, 11),
+        #             "font_color": [176, 19, 11],
         #         }
         #     },
         #     "data": {
@@ -944,10 +944,8 @@ def generate_pptx(event, context):
     # }
     
     json_data = json.loads(event['body'])
-    print("json_data",json_data)
-    # dataObj = pydash.get(json_data,'data')
     dataObj = json.loads(pydash.get(json_data,'data'))
-    print("dataObj",dataObj)
+   
     s3_client = boto3.client('s3')
     response = s3_client.get_object(Bucket=POC_PPTX_BUCKET, Key='demo.pptx')
     data = response['Body'].read()
