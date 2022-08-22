@@ -6,7 +6,7 @@ const lambda=new AWS.Lambda();
 const {B2B_AUTH}=commonConstants;
 const {STAGE}=process.env;
 
-let _event=undefined;
+let _event={};
 const lambdaHelper={
     intializeEvent:event=>{
         _event=event;
@@ -19,15 +19,17 @@ const lambdaHelper={
 
         if(!_.isEmpty(payload)){
             params.Payload=JSON.stringify(payload);
+            
         }
-        console.log('PARAM',params);
+        
         const{Payload} =await lambda.invoke(params).promise();
-        console.log("payload",Payload);
+        
         const {statusCode=null,body=null}=JSON.parse(Payload);
         if(!statusCode){
             throw Error('Something Went Wrong While invoking Lambda Request-Response')
         }
-        const {_body}=JSON.parse(body);
+        const _body=JSON.parse(body);
+        
         
         if(statusCode===200||statusCode===201){
             return _body.content ? _body.content : _body;

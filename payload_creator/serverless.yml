@@ -25,6 +25,11 @@ provider:
             - s3:PutObject
             - s3:GetObject
           Resource: '*'
+        - Effect: Allow
+          Action:
+            - lambda:InvokeFunction
+            - lambda:InvokeAsync
+          Resource: '*'
 
   serverless-offline:
     host: 0.0.0.0
