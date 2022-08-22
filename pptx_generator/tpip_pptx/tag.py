@@ -28,9 +28,13 @@ class Tag:
         matches = self.get_tag_content(pattern, shape)
         if (not matches or len(matches) < 1):
             return
+        
+        matching_val = {}
         for match in matches:
-            object_value = pydash.get(dataObj, match, default={})
-            return match, object_value
+            object_value = pydash.get(dataObj, match, default={})   
+            matching_val[match] = object_value
+        return matching_val
+        
 
     def get_tag_from_string(self,pattern, string):
         matches = re.findall(pattern, string)

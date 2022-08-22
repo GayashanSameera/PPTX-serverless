@@ -185,11 +185,12 @@ class Table(Tag):
         
         def replace_tables(self,pattern,presentation,slide,shape,slide_index,dataObj):
             pattern = CommandRegex.CREATE_TABLE.value
-            match , object_value = super().get_object_values(pattern, shape, dataObj)
-            if(object_value):
-                super().replace_tags(str(f"{CommandRegexSub.TB_ADD.value} {match} +++"), "", shape)
-                self.create_table(presentation, slide, shape, slide_index, object_value)
-                
+            matching_val = super().get_object_values(pattern, shape, dataObj)
+            for val in matching_val:
+                if(matching_val[val]):
+                    super().replace_tags(str(f"{CommandRegexSub.TB_ADD.value} {val} +++"), "", shape)
+                    self.create_table(presentation, slide, shape, slide_index, matching_val[val])
+                    
                 
         def create_table(self,presentation, slide, shape, slide_index, dataObj):
             row_count = pydash.get(dataObj,"row_count",default=5)
