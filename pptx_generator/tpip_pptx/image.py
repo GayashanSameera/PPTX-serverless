@@ -13,15 +13,16 @@ class Image(Tag):
 
     def replace_images(self,commands_dic,presentation,slide,shape,slides,dataObj):
         pattern = CommandRegex.IMAGE.value
-        match, object_value = super().get_object_values(pattern, shape,dataObj)
+        matching_val = super().get_object_values(pattern, shape,dataObj)
         
-        url = pydash.get(object_value, "url", default="")
-        left = pydash.get(object_value, "size.left", default=1)
-        height = pydash.get(object_value, "size.height", default=1)
-        top = pydash.get(object_value, "size.top", default=5)
-        width = pydash.get(object_value, "size.width", default=5)
+        for val in matching_val:
+            url = pydash.get(matching_val[val], "url", default="")
+            left = pydash.get(matching_val[val], "size.left", default=1)
+            height = pydash.get(matching_val[val], "size.height", default=1)
+            top = pydash.get(matching_val[val], "size.top", default=5)
+            width = pydash.get(matching_val[val], "size.width", default=5)
 
-        decodeimg = base64.b64decode(url)
-        img = io.BytesIO(decodeimg)
-        slide.shapes.add_picture(img, Inches(left), Inches(top), Inches(width), Inches(height))
-        super().replace_tags(str(f"{CommandRegexSub.IMG.value} {match} +++"), "", shape)
+            decodeimg = base64.b64decode(url)
+            img = io.BytesIO(decodeimg)
+            slide.shapes.add_picture(img, Inches(left), Inches(top), Inches(width), Inches(height))
+            super().replace_tags(str(f"{CommandRegexSub.IMG.value} {val} +++"), "", shape)
