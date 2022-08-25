@@ -58,7 +58,7 @@ const payloadCreatorHandler={
       const _event=event;
       const{templateKey,outPutFileName,destBucketName,destPath}=event.body;
       
-      _event.body=JSON.stringify({template:JSON.stringify(template),templateKey,outPutFileName,destBucketName:JSON.stringify(destBucketName),destPath});
+      _event.body=JSON.stringify({template:JSON.stringify(template),templateKey,outPutFileName,destBucketName,destPath});
       //call to python service using  createPayload responce 
       await lambdaHelper.invokeR2(TPIP_MS_PPTX_GEN,TPIP_FN_GENERATE,_event);
       const duration = performance.now() - start;
