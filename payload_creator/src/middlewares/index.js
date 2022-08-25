@@ -2,7 +2,7 @@ import { lambdaHelper, responseHelper } from "../helpers";
 
 const eventMiddleware=async(event,...middlewares)=>{
     if(event.source==='serverless-warmup'){
-        console.log('warmup-lamda is warm');
+        console.log('warmup-lambda is warm');
         
         return responseHelper.successResponse(event,'success');
     };
@@ -23,9 +23,8 @@ const eventMiddleware=async(event,...middlewares)=>{
         }
         return result;
     }catch(error){
-        console.log('testinggggggg',error);
         if(error.message==='400')
-        return responseHelper.errorResponse(event,400,"invaliiiiiiiiiidddddddddd parameters");
+        return responseHelper.errorResponse(event,400,"invalid parameters");
         if(error.message==='401')
         return responseHelper.errorResponse(event,401,'unauthorized');
         if(error.message==='505')

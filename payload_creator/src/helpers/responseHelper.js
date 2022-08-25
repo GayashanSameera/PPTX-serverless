@@ -11,7 +11,7 @@ const responseHelper= {
         }
         return success;
     },
-    errorResponse:(event,statusCode,message,err,errorPayload)=>{
+    errorResponse:(event,statusCode,message,errorPayload)=>{
         
         const resData={
             statusCode,

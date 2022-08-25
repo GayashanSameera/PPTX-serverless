@@ -16,6 +16,7 @@ provider:
     minimumCompressionSize: 1024
   environment:
     POC_PPTX_BUCKET: ${file(../env.yml):${opt:stage}.pocPptxBucket}
+    STAGE: ${self:provider.stage, 'dev'}
   iam:
     role:
       statements:
@@ -23,6 +24,11 @@ provider:
           Action:
             - s3:PutObject
             - s3:GetObject
+          Resource: '*'
+        - Effect: Allow
+          Action:
+            - lambda:InvokeFunction
+            - lambda:InvokeAsync
           Resource: '*'
 
   serverless-offline:
