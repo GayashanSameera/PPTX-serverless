@@ -19,7 +19,7 @@ class Toc(Tag):
                         pattern = CommandRegex.TOC.value
                         matches = super().get_tag_content(pattern, shape)
                         data_path = matches[0]
-                        datam = pydash.get(data, data_path, default=[])
+                        datam = pydash.get(data, data_path,default=[])
                         self.update_toc_table(slide,datam,ids)
                         super().replace_tags(str(f"{CommandRegexSub.TOC.value} {data_path} +++"), "", shape)
                         return

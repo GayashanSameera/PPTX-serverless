@@ -17,9 +17,10 @@ class Expression(Tag):
         for match in matches:
             pattern_condition = CommandRegex.PATTERN_CONDITION.value
             matched_condition = super().get_tag_from_string(pattern_condition,match)
-
+           
             pattern_content = CommandRegex.PATTERN_CONTENT.value
             matched_content = super().get_tag_from_string(pattern_content,match)
+            
             
             for contidion in matched_condition:
                 object_value = super().eval_executor(contidion, dataObj)

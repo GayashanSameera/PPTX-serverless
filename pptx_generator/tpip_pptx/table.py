@@ -196,8 +196,8 @@ class Table(Tag):
             row_count = pydash.get(dataObj,"row_count",default=5)
             cols = pydash.get(dataObj,"colum_count",default=3)
             headers = pydash.get(dataObj,"headers")
-            row_data = pydash.get(dataObj,"rows")
-            styles = pydash.get(dataObj,"styles")
+            row_data = pydash.get(dataObj,"rows",default={})
+            styles = pydash.get(dataObj,"styles",default={})
             table_count_per_slide = pydash.get(dataObj,"table_count_per_slide",default=4)
             
             
