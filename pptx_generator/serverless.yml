@@ -1,6 +1,6 @@
 service: tpip-ms-pptx-gen
 projectDir: ../
-frameworkVersion: '3'
+frameworkVersion: "3"
 
 provider:
   name: aws
@@ -12,11 +12,12 @@ provider:
   iam:
     role:
       statements:
-        - Effect: 'Allow'
+        - Effect: "Allow"
           Action:
             - s3:PutObject
             - s3:GetObject
-          Resource: '*'
+            - s3:ListBucket
+          Resource: "*"
 
 custom:
   serverless-offline:

@@ -16,9 +16,10 @@ class Tag:
             text_frame = shape.text_frame
             for paragraph in text_frame.paragraphs:
                 for run in paragraph.runs:
-                    cur_text = run.text
-                    new_text = cur_text.replace(replaced_for, replaced_text)
-                    run.text = new_text
+                    if run.text == replaced_for:
+                        cur_text = run.text
+                        new_text = cur_text.replace(replaced_for, replaced_text)
+                        run.text = new_text
                     
     def check_tag_exist(self,tag, shape):
         matches = tag in shape.text
@@ -28,12 +29,12 @@ class Tag:
         matches = self.get_tag_content(pattern, shape)
         if (not matches or len(matches) < 1):
             return
-        
-        matching_val = {}
-        for match in matches:
-            object_value = pydash.get(dataObj, match, default={})   
-            matching_val[match] = object_value
-        return matching_val
+        else:
+            matching_val = {}
+            for match in matches:
+                object_value = pydash.get(dataObj, match, default={})   
+                matching_val[match] = object_value
+            return matching_val
         
 
     def get_tag_from_string(self,pattern, string):

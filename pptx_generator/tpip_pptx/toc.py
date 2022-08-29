@@ -19,7 +19,7 @@ class Toc(Tag):
                         pattern = CommandRegex.TOC.value
                         matches = super().get_tag_content(pattern, shape)
                         data_path = matches[0]
-                        datam = pydash.get(data, data_path)
+                        datam = pydash.get(data, data_path,default=[])
                         self.update_toc_table(slide,datam,ids)
                         super().replace_tags(str(f"{CommandRegexSub.TOC.value} {data_path} +++"), "", shape)
                         return
@@ -72,6 +72,7 @@ class Toc(Tag):
             for shape in slide.shapes:
                 if shape.has_text_frame:
                     matches = super().get_tag_content(pattern, shape)
+                    match_string = []
                     if(matches and len(matches) > 0):
                         match_string = matches[0]
                         page_number = slides.index(slide) + 1
@@ -82,5 +83,5 @@ class Toc(Tag):
                         else:
                             res[match_string] = page_number
 
-                super().replace_tags(str(f"{CommandRegexSub.TOC_IDS.value} {matches} +++"), "", shape)
+                super().replace_tags(str(f"{CommandRegexSub.TOC_IDS.value} {match_string} +++"), "", shape)
         return res
