@@ -112,44 +112,69 @@ def generate_pptx(event, context):
     templateKey = pydash.get(json_data,'templateKey')
     destPath = pydash.get(json_data,'destPath')
     outPutFileName = pydash.get(json_data,'outPutFileName')
+    DEST_BUCKET_NAME = pydash.get(json_data,'destBucketName')
     
     s3_client = boto3.client('s3')
-    response = s3_client.get_object(Bucket=POC_PPTX_BUCKET, Key=str(f"{templateKey}.pptx"))
-    data = response['Body'].read()
-  
-    f = open('/tmp/{templateKey}.pptx', "wb")
-    f.write(data)
-    f.close()
-    presentationObject = Presentation('/tmp/{templateKey}.pptx')
-   
-    executor = CommandExecutor(presentationObject, dataObj)
-    executor.execute()
-    
-    slideObj = Slide()
-    slideObj.remove_extra_slides(presentationObject)
+    s3 = boto3.resource('s3')
+    for key in s3_client.list_objects(Bucket=POC_PPTX_BUCKET)['Contents']:
+        t_key = key['Key']
+        tempKey = str(f"{templateKey}.pptx")
+        if t_key == tempKey:
+            response = s3_client.get_object(Bucket=POC_PPTX_BUCKET, Key=str(f"{templateKey}.pptx"))
+            data = response['Body'].read()
+        
+            f = open('/tmp/{templateKey}.pptx', "wb")
+            f.write(data)
+            f.close()
+            presentationObject = Presentation('/tmp/{templateKey}.pptx')
+        
+            executor = CommandExecutor(presentationObject, dataObj)
+            executor.execute()
+            
+            slideObj = Slide()
+            slideObj.remove_extra_slides(presentationObject)
 
-    toc = Toc()
-    toc.drow_toc(presentationObject, dataObj)
-    
+            toc = Toc()
+            toc.drow_toc(presentationObject, dataObj)
+            
 
-    try:
-        with BytesIO() as fileobj:
-            presentationObject.save(fileobj)
-            fileobj.seek(0)
-            PATH = str(f"{destPath}/{outPutFileName}")
-            res = s3_client.upload_fileobj(fileobj, POC_PPTX_BUCKET, PATH)
-    except ClientError as e:
-        logging.error(e)
-        return False
+            try:
+                with BytesIO() as fileobj:
+                    presentationObject.save(fileobj)
+                    fileobj.seek(0)
+                    PATH = str(f"{destPath}/{outPutFileName}")
+                    try:
+                       
+                        bucket = s3.Bucket(DEST_BUCKET_NAME)
+                        s3.meta.client.head_bucket(Bucket=DEST_BUCKET_NAME)
+                        res = s3_client.upload_fileobj(fileobj, DEST_BUCKET_NAME, PATH)
+                       
+                    except ClientError as e:
+                        logging.error(e)
+                        return False
+                       
+                    
+                   
+            except ClientError as e:
+                logging.error(e)
+                return False
 
-    body = {
-        "message": "Go Serverless v1.0! Your function executed successfully!",
-        "content": event
-    }
+            body = {
+                "message": "Go Serverless v1.0! Your function executed successfully!",
+                "content": event
+            }
 
-    response = {
-        "statusCode": 200,
-        "body": json.dumps(body)
-    }
+            response = {
+                "statusCode": 200,
+                "body": json.dumps(body)
+            }
 
-    return response
+            return response
+        else:
+            response = {
+                "statusCode": 500,
+                "message":""
+                
+            }
+
+            return response
