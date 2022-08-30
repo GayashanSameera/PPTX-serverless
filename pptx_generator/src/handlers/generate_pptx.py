@@ -113,6 +113,7 @@ def generate_pptx(event, context):
     destPath = pydash.get(json_data,'destPath')
     outPutFileName = pydash.get(json_data,'outPutFileName')
     DEST_BUCKET_NAME = pydash.get(json_data,'destBucketName')
+    PATH = str(f"{destPath}/{outPutFileName}")
     
     s3_client = boto3.client('s3')
     s3 = boto3.resource('s3')
@@ -142,7 +143,7 @@ def generate_pptx(event, context):
                 with BytesIO() as fileobj:
                     presentationObject.save(fileobj)
                     fileobj.seek(0)
-                    PATH = str(f"{destPath}/{outPutFileName}")
+                    
                     try:
                        
                         bucket = s3.Bucket(DEST_BUCKET_NAME)
@@ -161,7 +162,9 @@ def generate_pptx(event, context):
 
             body = {
                 "message": "Go Serverless v1.0! Your function executed successfully!",
-                "content": event
+                "content": {
+                    "path":PATH
+                }
             }
 
             response = {

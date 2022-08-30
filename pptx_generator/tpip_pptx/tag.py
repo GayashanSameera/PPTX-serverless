@@ -32,8 +32,13 @@ class Tag:
         else:
             matching_val = {}
             for match in matches:
-                object_value = pydash.get(dataObj, match, default={})   
-                matching_val[match] = object_value
+                print("matches",matches)
+                print("match",match)
+                if match in dataObj:
+                    print("inside")
+                    object_value = pydash.get(dataObj, match, default={})   
+                    matching_val[match] = object_value
+                print("macth_val",matching_val)
             return matching_val
         
 
@@ -60,4 +65,4 @@ class Tag:
         return {"text": current_text}
 
     
-   
+        
