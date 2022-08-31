@@ -11,8 +11,8 @@ class Text(Tag):
 
     def text_replace(self,commands_dic,presentation,slide,shape,slides,dataObj):
         pattern = CommandRegex.TEXT.value
-        matching_val = super().get_object_values(pattern, shape, dataObj)
-        print("ccc",matching_val)
+        matching_val,match = super().get_object_values(pattern, shape, dataObj)
+        # print("ccc",matching_val,"matchhhhhhhhh",match)
         
         if len(matching_val) > 0:
        
@@ -50,4 +50,4 @@ class Text(Tag):
 
         else:
           print("else") 
-          super().replace_tags(str(f"{CommandRegexSub.INS.value} {val} +++"), "", shape)
+          super().replace_tags(str(f"{CommandRegexSub.INS.value} {match} +++"), "", shape)

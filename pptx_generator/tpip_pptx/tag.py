@@ -36,10 +36,11 @@ class Tag:
                 print("match",match)
                 if match in dataObj:
                     print("inside")
-                    object_value = pydash.get(dataObj, match, default={})   
-                    matching_val[match] = object_value
+                    object_value = pydash.get(dataObj, match, default={})
+                    if object_value != "":
+                       matching_val[match] = object_value
                 print("macth_val",matching_val)
-            return matching_val
+            return matching_val , match
         
 
     def get_tag_from_string(self,pattern, string):
