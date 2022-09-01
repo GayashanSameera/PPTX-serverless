@@ -78,9 +78,9 @@ class CommandRegistry:
 class CommandExecutor:
     registry = CommandRegistry()
 
-    def __init__(self, presentation, dataObj):
+    def __init__(self, presentation, data_obj):
         self.presentation = presentation
-        self.dataObj = dataObj
+        self.data_obj = data_obj
 
     def execute(self):
         # get command names as a list
@@ -98,7 +98,7 @@ class CommandExecutor:
                             
                             try:
                                 self.registry.get_command(commands_dic[cmd])(commands_dic, self.presentation, slide,
-                                                                            shape, slides.index(slide), self.dataObj)
+                                                                            shape, slides.index(slide), self.data_obj)
         
                             except Exception as e:
                                 print(e)
@@ -108,47 +108,48 @@ class CommandExecutor:
 
 def generate_pptx(event, context):
     json_data = json.loads(event['body'])
-    dataObj = json.loads(pydash.get(json_data,'template'))
-    templateKey = pydash.get(json_data,'templateKey')
-    destPath = pydash.get(json_data,'destPath')
-    outPutFileName = pydash.get(json_data,'outPutFileName')
-    DEST_BUCKET_NAME = pydash.get(json_data,'destBucketName')
-    PATH = str(f"{destPath}/{outPutFileName}")
+    data_obj = json.loads(pydash.get(json_data,'template'))
+    template_key = pydash.get(json_data,'templateKey')
+    dest_path = pydash.get(json_data,'destPath')
+    output_file_name = pydash.get(json_data,'outPutFileName')
+    dest_bucket_name = pydash.get(json_data,'destBucketName')
+    bucket_path = str(f"{dest_path}/{output_file_name}")
     
     s3_client = boto3.client('s3')
     s3 = boto3.resource('s3')
     for key in s3_client.list_objects(Bucket=POC_PPTX_BUCKET)['Contents']:
         t_key = key['Key']
-        tempKey = str(f"{templateKey}.pptx")
-        if t_key == tempKey:
-            response = s3_client.get_object(Bucket=POC_PPTX_BUCKET, Key=str(f"{templateKey}.pptx"))
+        temp_key = str(f"{template_key}.pptx")
+        if t_key == temp_key:
+            response = s3_client.get_object(Bucket=POC_PPTX_BUCKET, Key=str(f"{template_key}.pptx"))
+            print("response",response)
             data = response['Body'].read()
         
-            f = open('/tmp/{templateKey}.pptx', "wb")
+            f = open('/tmp/{template_key}.pptx', "wb")
             f.write(data)
             f.close()
-            presentationObject = Presentation('/tmp/{templateKey}.pptx')
+            presentation_object = Presentation('/tmp/{template_key}.pptx')
         
-            executor = CommandExecutor(presentationObject, dataObj)
+            executor = CommandExecutor(presentation_object, data_obj)
             executor.execute()
             
             slideObj = Slide()
-            slideObj.remove_extra_slides(presentationObject)
+            slideObj.remove_extra_slides(presentation_object)
 
             toc = Toc()
-            toc.drow_toc(presentationObject, dataObj)
+            toc.drow_toc(presentation_object, data_obj)
             
 
             try:
                 with BytesIO() as fileobj:
-                    presentationObject.save(fileobj)
+                    presentation_object.save(fileobj)
                     fileobj.seek(0)
                     
                     try:
                        
-                        bucket = s3.Bucket(DEST_BUCKET_NAME)
-                        s3.meta.client.head_bucket(Bucket=DEST_BUCKET_NAME)
-                        res = s3_client.upload_fileobj(fileobj, DEST_BUCKET_NAME, PATH)
+                        bucket = s3.Bucket(output_file_name)
+                        s3.meta.client.head_bucket(Bucket=dest_bucket_name)
+                        res = s3_client.upload_fileobj(fileobj, dest_bucket_name, bucket_path)
                        
                     except ClientError as e:
                         logging.error(e)
@@ -161,9 +162,9 @@ def generate_pptx(event, context):
                 return False
 
             body = {
-                "message": "Go Serverless v1.0! Your function executed successfully!",
+                "message": "Pptx generate successfully!",
                 "content": {
-                    "path":PATH
+                    "path":bucket_path
                 }
             }
 
