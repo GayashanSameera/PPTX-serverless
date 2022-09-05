@@ -9,10 +9,9 @@ class Text(Tag):
     def __init__(self):
         pass
 
-    def text_replace(self,commands_dic,presentation,slide,shape,slides,dataObj):
+    def text_replace(self,commands_dic,presentation,slide,shape,slides,data_obj):
         pattern = CommandRegex.TEXT.value
-        matching_val,match = super().get_object_values(pattern, shape, dataObj)
-        # print("ccc",matching_val,"matchhhhhhhhh",match)
+        matching_val,match = super().get_object_values(pattern, shape, data_obj)
         
         if len(matching_val) > 0:
        
@@ -48,6 +47,14 @@ class Text(Tag):
                                     run.font.color.rgb = RGBColor(styles["font_color"][0], styles["font_color"][1], styles["font_color"][2])
                                 
 
-        else:
-          print("else") 
+        else: 
           super().replace_tags(str(f"{CommandRegexSub.INS.value} {match} +++"), "", shape)
+          _shap_count = 0
+          for _shape in slide.shapes:
+                if _shape.has_text_frame: 
+                    old_picture = slide.shapes[_shap_count]
+                    old_pic = old_picture._element
+                    old_pic.getparent().remove(old_pic)
+                    break
+          _shap_count += 1
+          
