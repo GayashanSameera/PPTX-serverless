@@ -25,15 +25,15 @@ class Tag:
         matches = tag in shape.text
         return matches
 
-    def get_object_values(self, pattern, shape,dataObj):
+    def get_object_values(self, pattern, shape,data_obj):
         matches = self.get_tag_content(pattern, shape)
         if (not matches or len(matches) < 1):
             return
         else:
             matching_val = {}
             for match in matches:
-                if match in dataObj:
-                    object_value = pydash.get(dataObj, match, default={})
+                if match in data_obj:
+                    object_value = pydash.get(data_obj, match, default={})
                     if object_value != "":
                        matching_val[match] = object_value
             return matching_val , match
@@ -44,10 +44,10 @@ class Tag:
         return matches
 
    
-    def eval_executor(self,logic,dataObj):
-        return eval(logic,dataObj)
+    def eval_executor(self,logic,data_obj):
+        return eval(logic,data_obj)
         
-    def text_tag_update(self,text, dataObj):
+    def text_tag_update(self,text, data_obj):
         current_text = text
         pattern = CommandRegex.TEXT.value
         matches = self.get_tag_from_string(pattern, text)
@@ -55,11 +55,26 @@ class Tag:
             return { "text": text }
 
         for match in matches:
-            object_value = pydash.get(dataObj, match, False)
+            object_value = pydash.get(data_obj, match, False)
             if (object_value != False):
                 current_text = current_text.replace(str(f"{CommandRegexSub.INS.value} {match} +++"), str(object_value))
 
         return {"text": current_text}
 
+    def table_remove(self, matched_content):
+        table_remove_pattern = CommandRegex.TABLE_REMOVE.value
+        table_remove_matches = self.get_tag_from_string(table_remove_pattern, matched_content)
+        table_remove_index_matches = table_remove_matches[0]
+        return table_remove_matches,table_remove_index_matches
     
-        
+    def table_row_remove(self,matched_content):
+         table_row_remove_pattern = CommandRegex.TABLE_ROW_REMOVE.value
+         table_row_remove_matches = self.get_tag_from_string(table_row_remove_pattern, matched_content)
+         table_row_remove_index_matches = table_row_remove_matches[0]
+         return table_row_remove_matches,table_row_remove_index_matches
+     
+    def table_col_remove(self,matched_content):
+         table_column_remove_pattern = CommandRegex.TABLE_COLUMN_REMOVE.value
+         table_column_remove_matches = self.get_tag_from_string(table_column_remove_pattern, matched_content)
+         table_col_remove_index_matches = table_column_remove_matches[0]
+         return table_column_remove_matches,table_col_remove_index_matches

@@ -17,7 +17,7 @@ class Table(Tag):
         def __init__(self):
             pass 
 
-        def update_table_text(self,commands_dic,presentation, slide, shape, slide_index, dataObj):
+        def update_table_text(self,commands_dic,presentation, slide, shape, slide_index, data_obj):
             pattern = CommandRegex.UPDATE_TABLE_TEXT.value
             matches = super().get_tag_content(pattern, shape)
 
@@ -34,8 +34,8 @@ class Table(Tag):
                     data_path = match.split(" DATA ")[1]
                     table_id = match.split(" DATA ")[0]
 
-                if data_path and data_path in dataObj:
-                    data = dataObj[data_path]
+                if data_path and data_path in data_obj:
+                    data = data_obj[data_path]
 
                 if data and "styles" in data:
                     styles = data["styles"]
@@ -93,12 +93,18 @@ class Table(Tag):
                 
                     if( matches_text_update and len(matches_text_update) > 0):
                         for match in matches_text_update:
-                            new_text = cell.text.replace(str(f"{CommandRegexSub.INS.value} {match} +++"), pydash.get(data, match))
-                            cell.text = new_text
-                            try:
-                                self.table_styles(cell,row_index,col_index,styles)
-                            except ValueError:
-                                print("error")
+                            data_value =pydash.get(data, match)
+                            if data_value != "" and data_value != None:
+                                new_text = cell.text.replace(str(f"{CommandRegexSub.INS.value} {match} +++"),data_value)
+                                cell.text = new_text
+                                try:
+                                    self.table_styles(cell,row_index,col_index,styles)
+                                except ValueError:
+                                    print("error")
+                            else:
+                                new_text = cell.text.replace(str(f"{CommandRegexSub.INS.value} {match} +++"),"")
+                                cell.text = new_text
+                 
                     col_index += 1 
                 row_index +=1     
             
@@ -183,22 +189,27 @@ class Table(Tag):
                 print("error")
                 
         
-        def replace_tables(self,pattern,presentation,slide,shape,slide_index,dataObj):
+        def replace_tables(self,pattern,presentation,slide,shape,slide_index,data_obj):
             pattern = CommandRegex.CREATE_TABLE.value
-            matching_val = super().get_object_values(pattern, shape, dataObj)
-            for val in matching_val:
-                if(matching_val[val]):
-                    super().replace_tags(str(f"{CommandRegexSub.TB_ADD.value} {val} +++"), "", shape)
-                    self.create_table(presentation, slide, shape, slide_index, matching_val[val])
+            matching_val,match = super().get_object_values(pattern, shape, data_obj)
+            if len(matching_val) > 0:
+                for val in matching_val:
+                    if(matching_val[val]):
+                        super().replace_tags(str(f"{CommandRegexSub.TB_ADD.value} {val} +++"), "", shape)
+                        self.create_table(presentation, slide, shape, slide_index, matching_val[val])
+                    else:
+                        super().replace_tags(str(f"{CommandRegexSub.TB_ADD.value} {val} +++"), "", shape)
+            else:
+                super().replace_tags(str(f"{CommandRegexSub.TB_ADD.value} {match} +++"), "", shape)
                     
                 
-        def create_table(self,presentation, slide, shape, slide_index, dataObj):
-            row_count = pydash.get(dataObj,"row_count",default=5)
-            cols = pydash.get(dataObj,"colum_count",default=3)
-            headers = pydash.get(dataObj,"headers")
-            row_data = pydash.get(dataObj,"rows",default={})
-            styles = pydash.get(dataObj,"styles",default={})
-            table_count_per_slide = pydash.get(dataObj,"table_count_per_slide",default=4)
+        def create_table(self,presentation, slide, shape, slide_index, data_obj):
+            row_count = pydash.get(data_obj,"row_count",default=5)
+            cols = pydash.get(data_obj,"colum_count",default=3)
+            headers = pydash.get(data_obj,"headers")
+            row_data = pydash.get(data_obj,"rows",default={})
+            styles = pydash.get(data_obj,"styles",default={})
+            table_count_per_slide = pydash.get(data_obj,"table_count_per_slide",default=4)
             
             
             total_rows = len(row_data)
@@ -327,7 +338,7 @@ class Table(Tag):
                 tailEnd = self.SubElement(ln, 'a:tailEnd', type='none', w='med', len='med')
                     
                     
-        def drow_tables(self,commands_dic,presentation, slide, shape, slide_index, dataObj):
+        def drow_tables(self,commands_dic,presentation, slide, shape, slide_index, data_obj):
             pattern = CommandRegex.TABLE_DRAW.value
             matches = super().get_tag_content(pattern, shape)
             
@@ -344,8 +355,8 @@ class Table(Tag):
                     data_path = match.split(" DATA ")[1]
                     table_id = match.split(" DATA ")[0]
 
-                if data_path and data_path in dataObj:
-                    data = dataObj[data_path]
+                if data_path and data_path in data_obj:
+                    data = data_obj[data_path]
 
                 if data and "styles" in data:
                     styles = data["styles"]
@@ -356,11 +367,17 @@ class Table(Tag):
                         for row in _shape.table.rows:
                             for cell in row.cells:
                                 if table_id_tag in cell.text:
-                                    self.execute_table_drower(_shape.table,data,styles)
-                                    new_text = cell.text.replace(str(f"{CommandRegexSub.TB_ID.value} {table_id} +++"), "")
-                                    cell.text = new_text
-                                    break
-
+                                    row_data = pydash.get(data,"rows",default=[])
+                                    if "rows" in data or len(row_data) < 1 :
+                                        self.execute_table_drower(_shape.table,data,styles)
+                                        new_text = cell.text.replace(str(f"{CommandRegexSub.TB_ID.value} {table_id} +++"), "")
+                                        cell.text = new_text
+                                        break
+                                    else:
+                                        new_text = cell.text.replace(str(f"{CommandRegexSub.TB_ID.value} {table_id} +++"), "")
+                                        cell.text = new_text
+                                       
+                                        
                 super().replace_tags(str(f"{CommandRegexSub.TB_DRW.value} {match} +++"), "", shape)
         
         def execute_table_drower(self,table,data,styles):
@@ -372,8 +389,7 @@ class Table(Tag):
                     self.add_new_row_to_existing_table(table)
                 for column in row:
                     cell = table.cell(row_index, colum_index)
-                    cell.text = column
-                    
+                    cell.text = column        
                     try:
                         self.table_styles(cell,row_index,colum_index,styles)
                     except ValueError:
@@ -381,6 +397,8 @@ class Table(Tag):
 
                     colum_index += 1
                 row_index += 1
+        
+                
                 
         def add_new_row_to_existing_table(self,table):
             new_row = deepcopy(table._tbl.tr_lst[1])
@@ -396,62 +414,53 @@ class Table(Tag):
             tr = row._tr
             tbl.remove(tr)
 
-        def remove_tables(self,slide,content):
-            table_remove_pattern = CommandRegex.TABLE_REMOVE.value
-            table_remove_matches = super().get_tag_from_string(table_remove_pattern, content)
-            
-            if( table_remove_matches and len(table_remove_matches) > 0):
-                table_remove_index_matches = table_remove_matches[0]
-                table_id_tag = str(f"{CommandRegexSub.TB_ID.value} {table_remove_index_matches} +++")
-                _shap_count = 0
-                for _shape in slide.shapes:
-                    if _shape.has_table: 
-                        for row in _shape.table.rows:
-                            for cell in row.cells:
-                                if table_id_tag in cell.text:
-                                    old_picture = slide.shapes[_shap_count]
-                                    old_pic = old_picture._element
-                                    old_pic.getparent().remove(old_pic)
-                                    break
-                    _shap_count += 1
-
-        def remove_table_rows(self,slide,content):
-            table_row_remove_pattern = CommandRegex.TABLE_ROW_REMOVE.value
-            table_row_remove_matches = super().get_tag_from_string(table_row_remove_pattern, content)
-            if( table_row_remove_matches and len(table_row_remove_matches) > 0):
-                table_row_remove_index_matches = table_row_remove_matches[0]
-                table_rw_id_tag = str(f"{CommandRegexSub.RW_ID.value} {table_row_remove_index_matches} +++")
-                for _shape in slide.shapes:
-                    if _shape.has_table: 
-                        for row_idx, row in enumerate(_shape.table.rows):
-                            for col_idx, cell in enumerate(row.cells):
-                                if table_row_remove_index_matches in cell.text:
-                                    row_deleted = _shape.table.rows[row_idx]
-                                    table = Table()
-                                    table.remove_row(_shape.table, row_deleted)
-                                    break
-
-        def remove_table_column(self,slide,content):
-            table_column_remove_pattern = CommandRegex.TABLE_COLUMN_REMOVE.value
-            table_column_remove_matches = super().get_tag_from_string(table_column_remove_pattern, content)
-            if( table_column_remove_matches and len(table_column_remove_matches) > 0):
-                table_column_remove_index_matches = table_column_remove_matches[0]
-                for _shape in slide.shapes:
-                    if _shape.has_table:
-                        colum_index = ""
-                        for row_idx, row in enumerate(_shape.table.rows):
-                            for col_idx, cell in enumerate(row.cells):
-                                if table_column_remove_index_matches in cell.text:
-                                    colum_index = col_idx
-                                    break
-
-                        for row_idx, row in enumerate(_shape.table.rows):
-                            for col_idx, cell in enumerate(row.cells):
-                                if col_idx == colum_index:
-                                    cell._tc.delete()
-
-                        tree = etree.ElementTree(_shape.table._tbl)
-                        for e in tree.iter():
-                            if(tree.getpath(e) == tree.getpath(_shape.table.columns[colum_index]._gridCol)):
-                                e.getparent().remove(e)
+        def remove_tables(self,slide,table_remove_matches):
+            table_remove_index_matches = table_remove_matches[0]
+            table_id_tag = str(f"{CommandRegexSub.TB_ID.value} {table_remove_index_matches} +++")
+            _shap_count = 0
+            for _shape in slide.shapes:
+                if _shape.has_table: 
+                    for row in _shape.table.rows:
+                        for cell in row.cells:
+                            if table_id_tag in cell.text:
+                                old_picture = slide.shapes[_shap_count]
+                                old_pic = old_picture._element
+                                old_pic.getparent().remove(old_pic)
                                 break
+                _shap_count += 1
+
+        def remove_table_rows(self,slide,table_row_remove_matches):
+            table_row_remove_index_matches = table_row_remove_matches[0]
+            table_rw_id_tag = str(f"{CommandRegexSub.RW_ID.value} {table_row_remove_index_matches} +++")
+            for _shape in slide.shapes:
+                if _shape.has_table: 
+                    for row_idx, row in enumerate(_shape.table.rows):
+                        for col_idx, cell in enumerate(row.cells):
+                            if table_row_remove_index_matches in cell.text:
+                                row_deleted = _shape.table.rows[row_idx]
+                                table = Table()
+                                table.remove_row(_shape.table, row_deleted)
+                                break
+
+        def remove_table_column(self,slide,table_column_remove_matches):
+           
+            table_column_remove_index_matches = table_column_remove_matches[0]
+            for _shape in slide.shapes:
+                if _shape.has_table:
+                    colum_index = ""
+                    for row_idx, row in enumerate(_shape.table.rows):
+                        for col_idx, cell in enumerate(row.cells):
+                            if table_column_remove_index_matches in cell.text:
+                                colum_index = col_idx
+                                break
+
+                    for row_idx, row in enumerate(_shape.table.rows):
+                        for col_idx, cell in enumerate(row.cells):
+                            if col_idx == colum_index:
+                                cell._tc.delete()
+
+                    tree = etree.ElementTree(_shape.table._tbl)
+                    for e in tree.iter():
+                        if(tree.getpath(e) == tree.getpath(_shape.table.columns[colum_index]._gridCol)):
+                            e.getparent().remove(e)
+                            break
