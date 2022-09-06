@@ -141,26 +141,25 @@ def generate_pptx(event, context):
             with BytesIO() as fileobj:
                 presentation_object.save(fileobj)
                 fileobj.seek(0)
-                
-                try:
+                bucket = s3.Bucket(output_file_name)
+                s3.meta.client.head_bucket(Bucket=dest_bucket_name)
+                res = s3_client.upload_fileobj(fileobj, dest_bucket_name, bucket_path)
+            
                     
-                    bucket = s3.Bucket(output_file_name)
-                    s3.meta.client.head_bucket(Bucket=dest_bucket_name)
-                    res = s3_client.upload_fileobj(fileobj, dest_bucket_name, bucket_path)
-                    
-                except ClientError as e:
-                    logging.error(e)
-                    response={
-                       "statusCode":400,
-                       "message":"Destination bucket cannot be found"
-                    }
-                    return response
-                    
-                
-                
         except ClientError as e:
-            logging.error(e)
-            return False
+            logging.error(e.response['Error']['Code'])
+            if e.response["Error"]["Code"] == "404":
+                response={
+                        "statusCode":404,
+                        "message":"Destination bucket cannot be found"
+                        }
+                return response
+            else:
+                response={
+                        "statusCode":500,
+                        "message":"Something went wrong"
+                        }
+                return response
 
         body = {
             "message": "Pptx generate successfully!",
@@ -177,9 +176,16 @@ def generate_pptx(event, context):
         return response
     
     except ClientError as e:
-         logging.error(e)
-         response= {
-             "statusCode":400,
-             "message":"The specified key does not exist."
-         }
-         return response
+         logging.error(e.response['Error']['Code'])
+         if e.response["Error"]["Code"] == "404":
+            response= {
+                "statusCode":404,
+                "message":"The specified key does not exist."
+            }
+            return response
+         else:
+            response= {
+                "statusCode":500,
+                "message":"Something went wrong."
+            }
+            return response
