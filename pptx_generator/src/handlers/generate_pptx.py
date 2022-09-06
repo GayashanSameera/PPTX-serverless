@@ -151,7 +151,7 @@ def generate_pptx(event, context):
                 except ClientError as e:
                     logging.error(e)
                     response={
-                       "statusCode":404,
+                       "statusCode":400,
                        "message":"Destination bucket cannot be found"
                     }
                     return response
@@ -180,6 +180,6 @@ def generate_pptx(event, context):
          logging.error(e)
          response= {
              "statusCode":400,
-             "message":"template key cannot found"
+             "message":"The specified key does not exist."
          }
          return response

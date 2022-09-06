@@ -66,23 +66,23 @@ class Tag:
 
         return {"text": current_text}
 
-    def get_table_remove_index_matches(self, matched_content):
-        table_remove_pattern = CommandRegex.TABLE_REMOVE.value
-        table_remove_matches = self.get_tag_from_string(table_remove_pattern, matched_content)
-        table_remove_index_matches = table_remove_matches[0]
-        return table_remove_matches,table_remove_index_matches
+    def get_table_remove_index_matches(self,pattern,matched_content):
+        remove_pattern = pattern
+        remove_matches = self.get_tag_from_string(remove_pattern, matched_content)
+        remove_index_matches = remove_matches[0]
+        return remove_matches,remove_index_matches
     
-    def get_table_row_remove_index_matches(self,matched_content):
-         table_row_remove_pattern = CommandRegex.TABLE_ROW_REMOVE.value
-         table_row_remove_matches = self.get_tag_from_string(table_row_remove_pattern, matched_content)
-         table_row_remove_index_matches = table_row_remove_matches[0]
-         return table_row_remove_matches,table_row_remove_index_matches
-     
-    def get_table_col_remove_index_matches(self,matched_content):
-         table_column_remove_pattern = CommandRegex.TABLE_COLUMN_REMOVE.value
-         table_column_remove_matches = self.get_tag_from_string(table_column_remove_pattern, matched_content)
-         table_col_remove_index_matches = table_column_remove_matches[0]
-         return table_column_remove_matches,table_col_remove_index_matches
+    def remove_table_tags(self,slide,id,remove_index_matches):
+        id_tag = str(f"{id} {remove_index_matches} +++")
+        for _shape in slide.shapes:
+                if _shape.has_table: 
+                    for row in _shape.table.rows:
+                        for cell in row.cells:
+                            for paragraph in cell.text_frame.paragraphs:
+                                for run in paragraph.runs:
+                                    if id_tag in run.text:
+                                            new_text = run.text.replace(str(f"{id} {remove_index_matches} +++"), "")
+                                            run.text = new_text
      
     
                                             

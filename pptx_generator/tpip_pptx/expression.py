@@ -44,110 +44,58 @@ class Expression(Tag):
                     #remove tables
                     for content in matched_content:
                         if "TABLE_REMOVE" in content:
-                            table_remove_matches,table_remove_index_matches = super().get_table_remove_index_matches(matched_content[0])
-                            if( table_remove_matches and len(table_remove_matches) > 0):
+                            remove_matches,remove_index_matches = super().get_table_remove_index_matches(CommandRegex.TABLE_REMOVE.value,matched_content[0])
+                            if( remove_matches and len(remove_matches) > 0):
                                 if(object_value):
                                     table = Table()
-                                    table.remove_tables(slide,table_remove_matches)
+                                    table.remove_tables(slide,remove_matches)
                                     super().replace_tags(str(f"{CommandRegexSub.IF.value} {match}{CommandRegexSub.IF_END.value}"), "", shape)
                                 else:
                                     super().replace_tags(str(f"{CommandRegexSub.IF.value} {match}{CommandRegexSub.IF_END.value}"), "", shape)
-                                    table_id_tag = str(f"{CommandRegexSub.TB_ID.value} {table_remove_index_matches} +++")
-                                    for _shape in slide.shapes:
-                                        if _shape.has_table: 
-                                            for row in _shape.table.rows:
-                                                for cell in row.cells:
-                                                    for paragraph in cell.text_frame.paragraphs:
-                                                            for run in paragraph.runs:
-                                                                if table_id_tag in run.text:
-                                                                    new_text = run.text.replace(str(f"{CommandRegexSub.TB_ID.value} {table_remove_index_matches} +++"), "")
-                                                                    run.text = new_text
+                                    super().remove_table_tags(slide,CommandRegexSub.TB_ID.value,remove_index_matches)
 
                         #remove table row
                         if "TABLE_ROW_REMOVE" in content:
-                            table_row_remove_matches,table_row_remove_index_matches = super().get_table_row_remove_index_matches(matched_content[0])
-                            if( table_row_remove_matches and len(table_row_remove_matches) > 0):
+                            remove_matches,remove_index_matches = super().get_table_remove_index_matches(CommandRegex.TABLE_ROW_REMOVE.value,matched_content[0])
+                            if( remove_matches and len(remove_matches) > 0):
                                 if(object_value):
                                     table = Table()
-                                    table.remove_table_rows(slide,table_row_remove_matches)
+                                    table.remove_table_rows(slide,remove_matches)
                                     super().replace_tags(str(f"{CommandRegexSub.IF.value} {match}{CommandRegexSub.IF_END.value}"), "", shape)
                                 else:
                                     super().replace_tags(str(f"{CommandRegexSub.IF.value} {match}{CommandRegexSub.IF_END.value}"), "", shape)
-                                    table_rw_id_tag = str(f"{CommandRegexSub.RW_ID.value} {table_row_remove_index_matches} +++")
-                                    for _shape in slide.shapes:
-                                        if _shape.has_table: 
-                                            for row in _shape.table.rows:
-                                                for cell in row.cells:
-                                                  for paragraph in cell.text_frame.paragraphs:
-                                                        for run in paragraph.runs:
-                                                            if table_rw_id_tag in run.text:
-                                                                new_text = run.text.replace(str(f"{CommandRegexSub.RW_ID.value} {table_row_remove_index_matches} +++"), "")
-                                                                run.text = new_text              
+                                    super().remove_table_tags(slide,CommandRegexSub.RW_ID.value,remove_index_matches)
+                                  
                         #remove table column
                         if "TABLE_COLUMN_REMOVE" in content:
-                            table_column_remove_matches,table_column_remove_index_matches = super().get_table_col_remove_index_matches(matched_content[0])
-                            if( table_column_remove_matches and len(table_column_remove_matches) > 0):
+                            remove_matches,remove_index_matches = super().get_table_remove_index_matches(CommandRegex.TABLE_COLUMN_REMOVE.value,matched_content[0])
+                            if(  remove_matches and len( remove_matches) > 0):
                                 if(object_value):
                                     table = Table()
-                                    table.remove_table_column(slide,table_column_remove_matches)
+                                    table.remove_table_column(slide,remove_matches)
                                     super().replace_tags(str(f"{CommandRegexSub.IF.value} {match}{CommandRegexSub.IF_END.value}"), "", shape)
                                 else:
                                     super().replace_tags(str(f"{CommandRegexSub.IF.value} {match}{CommandRegexSub.IF_END.value}"), "", shape)
-                                    table_cl_id_tag = str(f"{CommandRegexSub.COL_ID.value} {table_column_remove_index_matches} +++")
-                                    for _shape in slide.shapes:
-                                        if _shape.has_table: 
-                                            for row in _shape.table.rows:
-                                                for cell in row.cells:
-                                                        for paragraph in cell.text_frame.paragraphs:
-                                                            for run in paragraph.runs:
-                                                                if table_cl_id_tag in run.text:
-                                                                    new_text = run.text.replace(str(f"{CommandRegexSub.COL_ID.value} {table_column_remove_index_matches} +++"), "")
-                                                                    run.text = new_text
+                                    super().remove_table_tags(slide,CommandRegexSub.COL_ID.value,remove_index_matches)
+                                   
                 else:
                     super().replace_tags(str(f"{CommandRegexSub.IF.value} {match}{CommandRegexSub.IF_END.value}"), "", shape)
                     for content in matched_content:
                         if "TABLE_ROW_REMOVE" in content:
-                            table_row_remove_matches,table_row_remove_index_matches = super().get_table_row_remove_index_matches(matched_content[0])
-                            table_rw_id_tag = str(f"{CommandRegexSub.RW_ID.value} {table_row_remove_index_matches} +++")
-                            for _shape in slide.shapes:
-                                    if _shape.has_table: 
-                                        for row in _shape.table.rows:
-                                            for cell in row.cells:
-                                               for paragraph in cell.text_frame.paragraphs:
-                                                    for run in paragraph.runs:
-                                                        if table_rw_id_tag in run.text:
-                                                              new_text = run.text.replace(str(f"{CommandRegexSub.RW_ID.value} {table_row_remove_index_matches} +++"), "")
-                                                              run.text = new_text
-                                        
-                        
+                            remove_matches,remove_index_matches = super().get_table_remove_index_matches(CommandRegex.TABLE_ROW_REMOVE.value,matched_content[0])
+                            super().remove_table_tags(slide,CommandRegexSub.RW_ID.value,remove_index_matches)
+                                                      
+                                         
                         if "TABLE_REMOVE" in content:
-                            table_remove_matches,table_remove_index_matches = super().get_table_remove_index_matches(matched_content[0])
-                            table_id_tag = str(f"{CommandRegexSub.TB_ID.value} {table_remove_index_matches} +++")
-                            for _shape in slide.shapes:
-                                if _shape.has_table: 
-                                    for row in _shape.table.rows:
-                                        for cell in row.cells:
-                                            for paragraph in cell.text_frame.paragraphs:
-                                                    for run in paragraph.runs:
-                                                        if table_id_tag in run.text:
-                                                              new_text = run.text.replace(str(f"{CommandRegexSub.TB_ID.value} {table_remove_index_matches} +++"), "")
-                                                              run.text = new_text
+                            remove_matches,remove_index_matches = super().get_table_remove_index_matches(CommandRegex.TABLE_REMOVE.value,matched_content[0])
+                            super().remove_table_tags(slide,CommandRegexSub.TB_ID.value,remove_index_matches)
+                           
                                             
                         if "TABLE_COLUMN_REMOVE" in content:
-                            table_column_remove_matches,table_column_remove_index_matches = super().get_table_col_remove_index_matches(matched_content[0])
-                            table_cl_id_tag = str(f"{CommandRegexSub.COL_ID.value} {table_column_remove_index_matches} +++")
-                            for _shape in slide.shapes:
-                                if _shape.has_table: 
-                                    for row in _shape.table.rows:
-                                        for cell in row.cells:
-                                                for paragraph in cell.text_frame.paragraphs:
-                                                    for run in paragraph.runs:
-                                                        if table_cl_id_tag in run.text:
-                                                              new_text = run.text.replace(str(f"{CommandRegexSub.COL_ID.value} {table_column_remove_index_matches} +++"), "")
-                                                              run.text = new_text
-                                                        
-                                                            
-                                               
+                            remove_matches,remove_index_matches = super().get_table_remove_index_matches(CommandRegex.TABLE_COLUMN_REMOVE.value,matched_content[0])
+                            super().remove_table_tags(slide,CommandRegexSub.COL_ID.value,remove_index_matches)
+                        
+                                                                                      
 
     def for_loop(self, commands_dic, presentation, slide, shape, slides_index, data_obj):
         pattern = CommandRegex.PATTERN_FOR.value
