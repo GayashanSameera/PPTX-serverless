@@ -45,7 +45,12 @@ class Tag:
 
    
     def eval_executor(self,logic,data_obj):
-        return eval(logic,data_obj)
+        try:
+            return eval(logic,data_obj)
+        except NameError:
+            return None
+            
+        
         
     def text_tag_update(self,text, data_obj):
         current_text = text
@@ -61,20 +66,26 @@ class Tag:
 
         return {"text": current_text}
 
-    def table_remove(self, matched_content):
+    def get_table_remove_index_matches(self, matched_content):
         table_remove_pattern = CommandRegex.TABLE_REMOVE.value
         table_remove_matches = self.get_tag_from_string(table_remove_pattern, matched_content)
         table_remove_index_matches = table_remove_matches[0]
         return table_remove_matches,table_remove_index_matches
     
-    def table_row_remove(self,matched_content):
+    def get_table_row_remove_index_matches(self,matched_content):
          table_row_remove_pattern = CommandRegex.TABLE_ROW_REMOVE.value
          table_row_remove_matches = self.get_tag_from_string(table_row_remove_pattern, matched_content)
          table_row_remove_index_matches = table_row_remove_matches[0]
          return table_row_remove_matches,table_row_remove_index_matches
      
-    def table_col_remove(self,matched_content):
+    def get_table_col_remove_index_matches(self,matched_content):
          table_column_remove_pattern = CommandRegex.TABLE_COLUMN_REMOVE.value
          table_column_remove_matches = self.get_tag_from_string(table_column_remove_pattern, matched_content)
          table_col_remove_index_matches = table_column_remove_matches[0]
          return table_column_remove_matches,table_col_remove_index_matches
+     
+    
+                                            
+                        
+     
+    

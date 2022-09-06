@@ -36,7 +36,7 @@ class Table(Tag):
 
                 if data_path and data_path in data_obj:
                     data = data_obj[data_path]
-
+                
                 if data and "styles" in data:
                     styles = data["styles"]
 

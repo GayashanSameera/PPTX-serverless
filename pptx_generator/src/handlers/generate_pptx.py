@@ -117,68 +117,69 @@ def generate_pptx(event, context):
     
     s3_client = boto3.client('s3')
     s3 = boto3.resource('s3')
-    for key in s3_client.list_objects(Bucket=POC_PPTX_BUCKET)['Contents']:
-        t_key = key['Key']
-        temp_key = str(f"{template_key}.pptx")
-        if t_key == temp_key:
-            response = s3_client.get_object(Bucket=POC_PPTX_BUCKET, Key=str(f"{template_key}.pptx"))
-            print("response",response)
-            data = response['Body'].read()
+    
+    try:
+        response = s3_client.get_object(Bucket=POC_PPTX_BUCKET, Key=str(f"{template_key}.pptx"))
+        data = response['Body'].read()
+
+        f = open('/tmp/{template_key}.pptx', "wb")
+        f.write(data)
+        f.close()
+        presentation_object = Presentation('/tmp/{template_key}.pptx')
+
+        executor = CommandExecutor(presentation_object, data_obj)
+        executor.execute()
         
-            f = open('/tmp/{template_key}.pptx', "wb")
-            f.write(data)
-            f.close()
-            presentation_object = Presentation('/tmp/{template_key}.pptx')
+        slideObj = Slide()
+        slideObj.remove_extra_slides(presentation_object)
+
+        toc = Toc()
+        toc.drow_toc(presentation_object, data_obj)
         
-            executor = CommandExecutor(presentation_object, data_obj)
-            executor.execute()
-            
-            slideObj = Slide()
-            slideObj.remove_extra_slides(presentation_object)
 
-            toc = Toc()
-            toc.drow_toc(presentation_object, data_obj)
-            
-
-            try:
-                with BytesIO() as fileobj:
-                    presentation_object.save(fileobj)
-                    fileobj.seek(0)
-                    
-                    try:
-                       
-                        bucket = s3.Bucket(output_file_name)
-                        s3.meta.client.head_bucket(Bucket=dest_bucket_name)
-                        res = s3_client.upload_fileobj(fileobj, dest_bucket_name, bucket_path)
-                       
-                    except ClientError as e:
-                        logging.error(e)
-                        return False
-                       
-                    
-                   
-            except ClientError as e:
-                logging.error(e)
-                return False
-
-            body = {
-                "message": "Pptx generate successfully!",
-                "content": {
-                    "path":bucket_path
-                }
-            }
-
-            response = {
-                "statusCode": 200,
-                "body": json.dumps(body)
-            }
-
-            return response
-        else:
-            response = {
-                "statusCode": 500,
-                "message":""
+        try:
+            with BytesIO() as fileobj:
+                presentation_object.save(fileobj)
+                fileobj.seek(0)
                 
-            }
+                try:
+                    
+                    bucket = s3.Bucket(output_file_name)
+                    s3.meta.client.head_bucket(Bucket=dest_bucket_name)
+                    res = s3_client.upload_fileobj(fileobj, dest_bucket_name, bucket_path)
+                    
+                except ClientError as e:
+                    logging.error(e)
+                    response={
+                       "statusCode":404,
+                       "message":"Destination bucket cannot be found"
+                    }
+                    return response
+                    
+                
+                
+        except ClientError as e:
+            logging.error(e)
+            return False
 
-            return response
+        body = {
+            "message": "Pptx generate successfully!",
+            "content": {
+                "path":bucket_path
+            }
+        }
+
+        response = {
+            "statusCode": 200,
+            "body": json.dumps(body)
+        }
+
+        return response
+    
+    except ClientError as e:
+         logging.error(e)
+         response= {
+             "statusCode":400,
+             "message":"template key cannot found"
+         }
+         return response
