@@ -147,7 +147,7 @@ def generate_pptx(event, context):
             
                     
         except ClientError as e:
-            logging.error(e.response['Error']['Code'])
+            logging.error(e.response)
             if e.response["Error"]["Code"] == "404":
                 response={
                         "statusCode":404,
@@ -176,8 +176,8 @@ def generate_pptx(event, context):
         return response
     
     except ClientError as e:
-         logging.error(e.response['Error']['Code'])
-         if e.response["Error"]["Code"] == "404":
+         logging.error(e.response)
+         if e.response["Error"]["Code"] == "NoSuchKey":
             response= {
                 "statusCode":404,
                 "message":"The specified key does not exist."
