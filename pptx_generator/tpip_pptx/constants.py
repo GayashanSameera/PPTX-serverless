@@ -28,6 +28,7 @@ class CommandRegexSub(enum.Enum):
     IF = '+++IF'
     IF_END = 'IF-END+++'
     RW_ID ='+++RW_ID'
+    COL_ID = '+++COL_ID'
     TOC = '+++TOC'
     TOC_IDS = '+++TOC_IDS'
 
