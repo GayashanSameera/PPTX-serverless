@@ -122,34 +122,14 @@ def generate_pptx(event, context):
     s3 = boto3.resource('s3')
     
     try:
-        # response = s3_client.get_object(Bucket=POC_PPTX_BUCKET, Key=str(f"{template_key}.pptx"))
-        # data = response['Body'].read()
-
-        # f = open('/tmp/{template_key}.pptx', "wb")
-        # f.write(data)
-        # f.close()
-        
-        response = s3_client.get_object(Bucket=POC_PPTX_BUCKET, Key='demo1.pptx')
+        response = s3_client.get_object(Bucket=POC_PPTX_BUCKET, Key=str(f"{template_key}.pptx"))
         data = response['Body'].read()
 
-        f = open('/tmp/demo1.pptx', "wb")
+        f = open('/tmp/{template_key}.pptx', "wb")
         f.write(data)
         f.close()
-        res = []
-        for path in os.listdir('/tmp'):
-         if os.path.isfile(os.path.join('/tmp', path)):
-            res.append(path)
-        print(res)
-        cwd = os.getcwd()
-        print("Current working directory: {0}".format(cwd))
-        # os.chdir('/tmp')
-        # cwd1 = os.getcwd()
-        # print("Current working directory: {0}".format(cwd1))
-        subprocess.call('dir && ppt2pdf file demo1.pptx', shell=True, cwd='/tmp')
-        subprocess.call('ppt2pdf file demo1.pptx', shell=True)
         
-        presentation_object = Presentation('/tmp/demo1.pptx')
-        # presentation_object = Presentation('/tmp/{template_key}.pptx')
+        presentation_object = Presentation('/tmp/{template_key}.pptx')
 
         executor = CommandExecutor(presentation_object, data_obj)
         executor.execute()
