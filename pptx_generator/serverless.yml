@@ -29,6 +29,8 @@ custom:
     dockerizePip: true # make it 'non-linux' when adding to the codepipeline if the proper python version installed in the pipeline
     useDownloadCache: false
     useStaticCache: false
+    
+
 
 functions:
   generate:
@@ -39,6 +41,8 @@ functions:
           cors: true
           method: post
           path: /poc/pptx/generate
+    
+      
 
 plugins:
   - serverless-python-requirements
