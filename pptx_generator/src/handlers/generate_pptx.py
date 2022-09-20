@@ -141,7 +141,7 @@ def generate_pptx(event, context):
                 res = s3_client.upload_fileobj(fileobj, dest_bucket_name, bucket_path)
                 s3_bucket = boto3.resource("s3").Bucket(POC_PPTX_BUCKET)
                 
-                os.system("curl https://s3.amazonaws.com/lambda-libreoffice-demo/lo.tar.gz -o /tmp/lo.tar.gz && cd /tmp && file  /tmp/lo.tar.gz && cd /tmp && tar -xvf /tmp/lo.tar.gz")
+                os.system("curl https://tpip-pptx.s3.eu-west-2.amazonaws.com/lo.tar.gz -o /tmp/lo.tar.gz && cd /tmp && file  /tmp/lo.tar.gz && cd /tmp && tar -xvf /tmp/lo.tar.gz")
                 os.system('cd /tmp && file  /tmp/lo.tar.gz')
                 convertCommand = "instdir/program/soffice --headless --invisible --nodefault --nofirststartwizard --nolockcheck --nologo --norestore --convert-to pdf --outdir /tmp"
                 response = s3_client.get_object(Bucket=POC_PPTX_BUCKET, Key=bucket_path)
