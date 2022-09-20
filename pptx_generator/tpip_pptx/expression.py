@@ -36,8 +36,6 @@ class Expression(Tag):
                             updated_data = super().text_tag_update(matched_content[0],data_obj)
                             if(updated_data and updated_data["text"]):
                                 text_replace = updated_data["text"]
-                        else:
-                            super().replace_tags(str(f"{CommandRegexSub.IF.value} {match}{CommandRegexSub.IF_END.value}"), "", shape)
                         # this is not working if you use tabspaces, but you can use spaces
                         super().replace_tags(str(f"{CommandRegexSub.IF.value} {match}{CommandRegexSub.IF_END.value}"), text_replace, shape)
 
