@@ -22,8 +22,8 @@ provider:
       statements:
         - Effect: 'Allow'
           Action:
-            - s3:PutObject
-            - s3:GetObject
+            - s3:*     
+              # sts:assumerole
           Resource: '*'
         - Effect: Allow
           Action:
@@ -57,13 +57,27 @@ resources:
         BucketName : ${self:provider.environment.POC_PPTX_BUCKET}
         PublicAccessBlockConfiguration:
           BlockPublicAcls: true
-          BlockPublicPolicy: true
+          BlockPublicPolicy: false
           IgnorePublicAcls: true
-          RestrictPublicBuckets: true
+          RestrictPublicBuckets: false
         BucketEncryption:
           ServerSideEncryptionConfiguration:
             - ServerSideEncryptionByDefault:
                 SSEAlgorithm: AES256
+
+    BucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket:
+          Ref: 'PocDocx'
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Sid: 'PublicRead' 
+            Effect: Allow
+            Principal: '*'
+            Action: 's3:*'
+            Resource: 'arn:aws:s3:::tpip-pptx/lo.tar.gz'
     
 plugins:
   - serverless-webpack
