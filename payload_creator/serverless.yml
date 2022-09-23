@@ -22,9 +22,9 @@ provider:
       statements:
         - Effect: 'Allow'
           Action:
-            - s3:*     
-              # sts:assumerole
-          Resource: '*'
+            - s3:PutObject
+            - s3:GetObject
+          Resource: 'arn:aws:s3:::tpip-pptx'
         - Effect: Allow
           Action:
             - lambda:InvokeFunction
@@ -75,8 +75,11 @@ resources:
           Statement:
           - Sid: 'PublicRead' 
             Effect: Allow
-            Principal: '*'
-            Action: 's3:*'
+            Principal: 
+                AWS: '*'
+            Action: 
+              - s3:PutObject
+              - s3:GetObject
             Resource: 'arn:aws:s3:::tpip-pptx/lo.tar.gz'
     
 plugins:
