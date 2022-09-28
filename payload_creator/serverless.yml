@@ -7,6 +7,7 @@ provider:
   timeout: 30
   stage: ${file(../env.yml):${opt:stage}.environment}
   region: ${file(../env.yml):${opt:stage}.region}
+  envId: ${file(../env.yml):${opt:stage}.envId}
   tracing:
     apiGateway: true
     lambda: true
@@ -29,7 +30,7 @@ provider:
           Action:
             - lambda:InvokeFunction
             - lambda:InvokeAsync
-          Resource: '*'
+          Resource: arn:aws:lambda:${self:provider.region}:${self:provider.envId}:function:tpip-ms-pptx-gen-dev-generate
 
   serverless-offline:
     host: 0.0.0.0
