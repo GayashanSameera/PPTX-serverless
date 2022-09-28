@@ -6,11 +6,7 @@ import logging
 from pptx import Presentation
 import json
 import pydash
-import subprocess
-import ppt2pdf
-import os
-
-from tpip_pptx.constants import Command, CommandRegex
+from tpip_pptx.constants import Command
 from tpip_pptx.image import Image
 from tpip_pptx.table import Table
 from tpip_pptx.text import Text
@@ -117,23 +113,18 @@ def generate_pptx(event, context):
     output_file_name = pydash.get(json_data,'outPutFileName')
     dest_bucket_name = pydash.get(json_data,'destBucketName')
     bucket_path = str(f"{dest_path}/{output_file_name}")
-    
     s3_client = boto3.client('s3')
     s3 = boto3.resource('s3')
     
     try:
         response = s3_client.get_object(Bucket=POC_PPTX_BUCKET, Key=str(f"{template_key}.pptx"))
         data = response['Body'].read()
-
-        f = open('/tmp/{template_key}.pptx', "wb")
+        f = open(f'/tmp/{template_key}.pptx', "wb")
         f.write(data)
         f.close()
-        
-        presentation_object = Presentation('/tmp/{template_key}.pptx')
-
+        presentation_object = Presentation(f'/tmp/{template_key}.pptx')
         executor = CommandExecutor(presentation_object, data_obj)
         executor.execute()
-        
         slideObj = Slide()
         slideObj.remove_extra_slides(presentation_object)
 
@@ -148,6 +139,24 @@ def generate_pptx(event, context):
                 bucket = s3.Bucket(output_file_name)
                 s3.meta.client.head_bucket(Bucket=dest_bucket_name)
                 res = s3_client.upload_fileobj(fileobj, dest_bucket_name, bucket_path)
+                s3_bucket = boto3.resource("s3").Bucket(POC_PPTX_BUCKET)
+                
+                os.system("curl https://tpip-pptx.s3.eu-west-2.amazonaws.com/lo.tar.gz -o /tmp/lo.tar.gz && cd /tmp && file  /tmp/lo.tar.gz && cd /tmp && tar -xvf /tmp/lo.tar.gz")
+                os.system('cd /tmp && file  /tmp/lo.tar.gz')
+                convertCommand = "instdir/program/soffice --headless --invisible --nodefault --nofirststartwizard --nolockcheck --nologo --norestore --convert-to pdf --outdir /tmp"
+                response = s3_client.get_object(Bucket=POC_PPTX_BUCKET, Key=bucket_path)
+                data = response['Body'].read()
+                f = open(f'/tmp/{output_file_name}', "wb")
+                f.write(data)
+                f.close()
+                # Execute libreoffice to convert input file
+                os.system(f"cd /tmp && {convertCommand} {output_file_name}")
+                # Save converted object in S3
+                outputFileName, _ = os.path.splitext(output_file_name)
+                outputFileName = outputFileName  + ".pdf"
+                f = open(f"/tmp/{outputFileName}","rb")
+                s3_bucket.put_object(Key=str(f"{dest_path}/{outputFileName}"),Body=f)
+                f.close()
             
                     
         except ClientError as e:
@@ -167,7 +176,7 @@ def generate_pptx(event, context):
             
 
         body = {
-            "message": "Pptx generate successfully!",
+            "message": "PPTX and PDF generate successfully!",
             "content": {
                 "path":bucket_path
             }

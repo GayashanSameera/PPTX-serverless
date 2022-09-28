@@ -6,7 +6,7 @@ provider:
   name: aws
   runtime: python3.7
   stage: ${file(../env.yml):${opt:stage}.environment}
-  region: eu-west-2
+  region: ${file(../env.yml):${opt:stage}.region}
   environment:
     POC_PPTX_BUCKET: ${file(../env.yml):${opt:stage}.pocPptxBucket}
   iam:
@@ -17,7 +17,7 @@ provider:
             - s3:PutObject
             - s3:GetObject
             - s3:ListBucket
-          Resource: "*"
+          Resource: arn:aws:s3:::*
 
 custom:
   serverless-offline:
@@ -29,6 +29,8 @@ custom:
     dockerizePip: true # make it 'non-linux' when adding to the codepipeline if the proper python version installed in the pipeline
     useDownloadCache: false
     useStaticCache: false
+    
+
 
 functions:
   generate:
@@ -39,6 +41,8 @@ functions:
           cors: true
           method: post
           path: /poc/pptx/generate
+    
+      
 
 plugins:
   - serverless-python-requirements

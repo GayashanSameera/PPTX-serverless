@@ -6,7 +6,8 @@ provider:
   runtime: nodejs14.x
   timeout: 30
   stage: ${file(../env.yml):${opt:stage}.environment}
-  region: eu-west-2
+  region: ${file(../env.yml):${opt:stage}.region}
+  envId: ${file(../env.yml):${opt:stage}.envId}
   tracing:
     apiGateway: true
     lambda: true
@@ -24,12 +25,12 @@ provider:
           Action:
             - s3:PutObject
             - s3:GetObject
-          Resource: '*'
+          Resource: 'arn:aws:s3:::${self:provider.environment.POC_PPTX_BUCKET}'
         - Effect: Allow
           Action:
             - lambda:InvokeFunction
             - lambda:InvokeAsync
-          Resource: '*'
+          Resource: arn:aws:lambda:${self:provider.region}:${self:provider.envId}:function:tpip-ms-pptx-gen-dev-generate
 
   serverless-offline:
     host: 0.0.0.0
@@ -57,13 +58,29 @@ resources:
         BucketName : ${self:provider.environment.POC_PPTX_BUCKET}
         PublicAccessBlockConfiguration:
           BlockPublicAcls: true
-          BlockPublicPolicy: true
+          BlockPublicPolicy: false
           IgnorePublicAcls: true
-          RestrictPublicBuckets: true
+          RestrictPublicBuckets: false
         BucketEncryption:
           ServerSideEncryptionConfiguration:
             - ServerSideEncryptionByDefault:
                 SSEAlgorithm: AES256
+
+    BucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket: ${self:provider.environment.POC_PPTX_BUCKET}
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Sid: 'PublicRead' 
+            Effect: Allow
+            Principal: 
+                 AWS : '*'
+            Action: 
+              - s3:PutObject
+              - s3:GetObject
+            Resource: 'arn:aws:s3:::${self:provider.environment.POC_PPTX_BUCKET}/lo.tar.gz'
     
 plugins:
   - serverless-webpack
